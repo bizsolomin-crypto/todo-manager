@@ -11,6 +11,7 @@ function App() {
   const [editingId, setEditingId] = useState(null)
   const [activeTab, setActiveTab] = useState('tasks') // tasks, calendar
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(null)
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
@@ -81,6 +82,19 @@ function App() {
   const recentCount = recentTodos.length
   const oldCount = oldTodos.length
   const completedCount = completedTodos.length
+
+  // Фильтрация задач по выбранной дате для календаря
+  const getTasksForDate = (date) => {
+    if (!date) return []
+    const dateStr = date.toISOString().split('T')[0]
+    return normalizedTodos.filter(todo => {
+      if (!todo.created_at) return false
+      const todoDate = new Date(todo.created_at).toISOString().split('T')[0]
+      return todoDate === dateStr
+    })
+  }
+
+  const selectedDateTasks = selectedDate ? getTasksForDate(selectedDate) : []
 
   return (
     <div className="app">
@@ -589,12 +603,20 @@ function App() {
                     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 // Суббота или воскресенье
                     const isToday = date.toDateString() === new Date().toDateString()
                     
+                    const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
+                    const dayTasks = getTasksForDate(date)
+                    const hasTasks = dayTasks.length > 0
+                    
                     days.push(
                       <div 
                         key={day} 
-                        className={`calendar-day ${isWeekend ? 'weekend' : 'workday'} ${isToday ? 'today' : ''}`}
+                        className={`calendar-day ${isWeekend ? 'weekend' : 'workday'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasTasks ? 'has-tasks' : ''}`}
+                        onClick={() => setSelectedDate(date)}
                       >
                         <span className="calendar-day-number">{day}</span>
+                        {hasTasks && (
+                          <span className="calendar-day-tasks-count">{dayTasks.length}</span>
+                        )}
                       </div>
                     )
                   }
@@ -603,20 +625,77 @@ function App() {
                 })()}
               </div>
 
-              <div className="calendar-legend">
-                <div className="legend-item">
-                  <div className="legend-color workday"></div>
-                  <span>Рабочий день</span>
+              {/* Список задач на выбранную дату */}
+              {selectedDate && (
+                <div className="calendar-tasks">
+                  <div className="calendar-tasks-header">
+                    <h3>
+                      {selectedDate.toLocaleDateString('ru-RU', { 
+                        weekday: 'long', 
+                        day: 'numeric', 
+                        month: 'long' 
+                      })}
+                    </h3>
+                    <button 
+                      className="calendar-close-date"
+                      onClick={() => setSelectedDate(null)}
+                      aria-label="Закрыть"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                  {selectedDateTasks.length > 0 ? (
+                    <div className="calendar-tasks-list">
+                      {selectedDateTasks.map(todo => (
+                        <div key={todo.id} className={`calendar-task-item ${todo.completed ? 'completed' : ''}`}>
+                          <div className="calendar-task-content">
+                            <button
+                              className={`checkbox ${todo.completed ? 'checked' : ''}`}
+                              onClick={() => toggleTodo(todo.id)}
+                            >
+                              {todo.completed && (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              )}
+                            </button>
+                            <span className="calendar-task-text">{todo.text}</span>
+                            {todo.category === 'recent' && (
+                              <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                                <span>&lt;</span>
+                                <span>15 мин</span>
+                              </span>
+                            )}
+                            {todo.category === 'old' && (
+                              <span className="category-tag category-tag-old" title="Более 15 минут">
+                                <span>&gt;</span>
+                                <span>15 мин</span>
+                              </span>
+                            )}
+                          </div>
+                          <button
+                            className="delete-button"
+                            onClick={() => deleteTodo(todo.id)}
+                            aria-label="Удалить задачу"
+                          >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="calendar-tasks-empty">
+                      <p>Нет задач на эту дату</p>
+                    </div>
+                  )}
                 </div>
-                <div className="legend-item">
-                  <div className="legend-color weekend"></div>
-                  <span>Выходной</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color today"></div>
-                  <span>Сегодня</span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}
