@@ -570,8 +570,9 @@
 
 .category-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .category-btn {
@@ -584,7 +585,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--text-secondary);
-  text-align: left;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .category-btn:hover {
@@ -899,11 +903,14 @@
 
   .category-buttons {
     gap: 8px;
+    flex-direction: row;
   }
 
   .category-btn {
-    padding: 10px 14px;
+    padding: 10px 12px;
     font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
   }
 
   .modal-footer {
