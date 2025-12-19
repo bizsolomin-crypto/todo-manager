@@ -880,7 +880,6 @@
 .modal-date-group {
   flex: 1;
   min-width: 0;
-  max-width: 200px;
 }
 
 .modal-date-group label {
@@ -894,7 +893,6 @@
 .modal-reward-group {
   flex: 1;
   min-width: 0;
-  max-width: 120px;
 }
 
 .modal-reward-group label {
@@ -1071,13 +1069,11 @@
   .modal-date-group {
     flex: 1;
     min-width: 0;
-    max-width: 160px;
   }
 
   .modal-reward-group {
     flex: 1;
     min-width: 0;
-    max-width: 100px;
   }
 
   .modal-reward-input {
