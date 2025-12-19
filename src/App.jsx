@@ -5,12 +5,14 @@ import './App.css'
 function App() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted } = useTodos()
   const [inputValue, setInputValue] = useState('')
+  const [showInput, setShowInput] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
       addTodo(inputValue)
       setInputValue('')
+      setShowInput(false)
     }
   }
 
@@ -18,6 +20,14 @@ function App() {
     if (e.key === 'Enter') {
       handleAddTodo()
     }
+    if (e.key === 'Escape') {
+      setShowInput(false)
+      setInputValue('')
+    }
+  }
+
+  const handlePlusClick = () => {
+    setShowInput(true)
   }
 
   // Нормализация данных для совместимости
@@ -67,24 +77,42 @@ function App() {
           </div>
         )}
 
-        <div className="input-section">
-          <div className="input-wrapper">
-            <input
-              type="text"
-              className="todo-input"
-              placeholder="Добавить новую задачу..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <button className="add-button" onClick={handleAddTodo}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        {showInput ? (
+          <div className="input-section">
+            <div className="input-wrapper">
+              <input
+                type="text"
+                className="todo-input"
+                placeholder="Введите задачу..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyPress}
+                autoFocus
+              />
+              <button className="add-button" onClick={handleAddTodo}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <button className="cancel-button" onClick={() => { setShowInput(false); setInputValue(''); }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="add-button-section">
+            <button className="add-button-large" onClick={handlePlusClick}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
             </button>
           </div>
-        </div>
+        )}
 
         {normalizedTodos.length > 0 && (
           <div className="filters">
