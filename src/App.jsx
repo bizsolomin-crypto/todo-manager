@@ -347,6 +347,18 @@ function App() {
                         >
                           {todo.text}
                         </span>
+                        {todo.category === 'recent' && (
+                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                            <span>&lt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
+                        {todo.category === 'old' && (
+                          <span className="category-tag category-tag-old" title="Более 15 минут">
+                            <span>&gt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
                         <button
                           className="edit-button"
                           onClick={() => handleEditStart(todo)}
@@ -413,6 +425,18 @@ function App() {
                         >
                           {todo.text}
                         </span>
+                        {todo.category === 'recent' && (
+                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                            <span>&lt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
+                        {todo.category === 'old' && (
+                          <span className="category-tag category-tag-old" title="Более 15 минут">
+                            <span>&gt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
                         <button
                           className="edit-button"
                           onClick={() => handleEditStart(todo)}
