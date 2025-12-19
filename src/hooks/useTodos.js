@@ -22,10 +22,10 @@ export function useTodos() {
           setTimeout(() => reject(new Error('Request timeout')), 3000)
         )
         
-        // Пытаемся загрузить без category сначала, если ошибка - пробуем с явным указанием колонок
+        // Загружаем все колонки, включая category
         const queryPromise = supabase
           .from('todos')
-          .select('id, text, completed, created_at, updated_at')
+          .select('*')
           .order('created_at', { ascending: false })
 
         try {
@@ -287,10 +287,22 @@ export function useTodos() {
           .update(updateData)
           .eq('id', id)
 
-        await Promise.race([updatePromise, timeoutPromise])
+        const { data: updatedData, error: updateError } = await Promise.race([updatePromise, timeoutPromise])
+        
+        if (updateError) throw updateError
 
-        // Перезагружаем для синхронизации
-        await loadTodos()
+        // Обновляем локально без полной перезагрузки, чтобы сохранить оптимистичное обновление
+        if (updatedData && updatedData.length > 0) {
+          const updatedItem = updatedData[0]
+          setTodos(todos.map(t => t.id === id ? {
+            ...t,
+            ...updatedItem,
+            category: updatedItem.category || t.category || 'none'
+          } : t))
+        } else {
+          // Если Supabase не вернул данные, просто обновляем локально
+          setTodos(todos.map(t => t.id === id ? updatedTodo : t))
+        }
       } else {
         const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
         setTodos(updatedTodos)
