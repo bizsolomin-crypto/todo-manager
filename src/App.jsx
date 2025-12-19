@@ -6,6 +6,7 @@ function App() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted, updateTodo } = useTodos()
   const [inputValue, setInputValue] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('none') // none, recent, old
+  const [selectedDate, setSelectedDate] = useState('') // Дата задачи
   const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
   const [editingId, setEditingId] = useState(null)
@@ -40,6 +41,7 @@ function App() {
       setShowModal(false)
       setInputValue('')
       setSelectedCategory('none')
+      setSelectedDate('')
       setEditingId(null)
     }
   }
@@ -52,6 +54,7 @@ function App() {
     setShowModal(false)
     setInputValue('')
     setSelectedCategory('none')
+    setSelectedDate('')
     setEditingId(null)
   }
 
@@ -59,6 +62,13 @@ function App() {
     setEditingId(todo.id)
     setInputValue(todo.text)
     setSelectedCategory(todo.category || 'none')
+    // Форматируем дату для input type="date" (YYYY-MM-DD)
+    if (todo.task_date) {
+      const date = new Date(todo.task_date)
+      setSelectedDate(date.toISOString().split('T')[0])
+    } else {
+      setSelectedDate('')
+    }
     setShowModal(true)
   }
 
@@ -68,7 +78,8 @@ function App() {
     text: todo.text || '',
     completed: todo.completed || false,
     created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
-    category: todo.category || 'none' // none, recent, old
+    category: todo.category || 'none', // none, recent, old
+    task_date: todo.task_date || null
   })).filter(todo => todo.text) // Убираем задачи без текста
 
   // Разделяем задачи по категории (только активные)
@@ -88,9 +99,11 @@ function App() {
     if (!date) return []
     const dateStr = date.toISOString().split('T')[0]
     return normalizedTodos.filter(todo => {
-      if (!todo.created_at) return false
-      const todoDate = new Date(todo.created_at).toISOString().split('T')[0]
-      return todoDate === dateStr
+      // Сначала проверяем task_date, если его нет - используем created_at
+      const todoDateStr = todo.task_date 
+        ? new Date(todo.task_date).toISOString().split('T')[0]
+        : (todo.created_at ? new Date(todo.created_at).toISOString().split('T')[0] : null)
+      return todoDateStr === dateStr
     })
   }
 
@@ -167,6 +180,16 @@ function App() {
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyPress}
                     autoFocus
+                  />
+                </div>
+                <div className="modal-date-group">
+                  <label>Дата задачи</label>
+                  <input
+                    type="date"
+                    className="modal-date-input"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    onKeyDown={handleKeyPress}
                   />
                 </div>
                 <div className="modal-category-group">

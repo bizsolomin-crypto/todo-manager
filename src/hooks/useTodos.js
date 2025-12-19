@@ -106,12 +106,13 @@ export function useTodos() {
     }
   }
 
-  const addTodo = async (text, category = 'none') => {
+  const addTodo = async (text, category = 'none', taskDate = null) => {
     const newTodo = {
       text: text.trim(),
       completed: false,
       created_at: new Date().toISOString(),
-      category: category || 'none'
+      category: category || 'none',
+      task_date: taskDate || null
     }
 
     // Оптимистичное обновление
