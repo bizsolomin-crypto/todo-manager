@@ -261,12 +261,14 @@ export function useTodos() {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
 
-    // Сохраняем все существующие поля, включая category
+    // Сохраняем все существующие поля, включая category и task_date
     const updatedTodo = { 
       ...todo, 
       ...updates,
       // Убеждаемся, что категория всегда сохраняется
-      category: updates.category !== undefined ? updates.category : (todo.category || 'none')
+      category: updates.category !== undefined ? updates.category : (todo.category || 'none'),
+      // Убеждаемся, что task_date сохраняется
+      task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null)
     }
 
     // Оптимистичное обновление
@@ -278,10 +280,11 @@ export function useTodos() {
           setTimeout(() => reject(new Error('Request timeout')), 5000)
         )
 
-        // Подготавливаем данные для обновления - всегда включаем category
+        // Подготавливаем данные для обновления - всегда включаем category и task_date
         const updateData = { 
           ...updates,
-          category: updates.category !== undefined ? updates.category : (todo.category || 'none')
+          category: updates.category !== undefined ? updates.category : (todo.category || 'none'),
+          task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null)
         }
 
         const updatePromise = supabase
