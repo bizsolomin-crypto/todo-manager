@@ -1,0 +1,570 @@
+.app {
+  width: 100%;
+}
+
+.container {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px var(--shadow-lg);
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+  /* Предотвращение переполнения на мобильных */
+  max-width: 100%;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.input-section {
+  padding: 30px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 16px 20px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
+  /* Улучшение для мобильных устройств */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.todo-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.todo-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.add-button {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  padding: 20px 30px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.filter-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.clear-button {
+  padding: 8px 16px;
+  border: 2px solid var(--danger);
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--danger);
+  margin-left: auto;
+}
+
+.clear-button:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.todos-list {
+  padding: 20px 30px;
+  min-height: 200px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.todo-item:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 4px 12px var(--shadow);
+  transform: translateY(-2px);
+}
+
+.todo-item.completed {
+  opacity: 0.7;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.todo-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkbox:hover {
+  border-color: var(--primary);
+}
+
+.checkbox.checked {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.todo-text {
+  font-size: 1rem;
+  color: var(--text-primary);
+  word-break: break-word;
+  flex: 1;
+}
+
+.delete-button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.delete-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state svg {
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px 30px;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 12px 20px;
+  margin: 0 20px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+/* Скроллбар */
+.todos-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.todos-list::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 4px;
+}
+
+.todos-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.todos-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .container {
+    border-radius: 16px;
+  }
+
+  .header {
+    padding: 35px 25px;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+  }
+
+  .input-section {
+    padding: 25px;
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 640px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px var(--shadow-lg);
+  }
+
+  .header {
+    padding: 25px 16px;
+  }
+
+  .header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .input-section {
+    padding: 16px;
+  }
+
+  .input-wrapper {
+    gap: 10px;
+  }
+
+  .todo-input {
+    padding: 14px 16px;
+    font-size: 16px; /* Предотвращает зум на iOS */
+    border-radius: 10px;
+  }
+
+  .add-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    min-width: 44px; /* Минимальный размер для touch */
+  }
+
+  .filters {
+    padding: 12px 16px;
+    gap: 6px;
+    flex-direction: column;
+  }
+
+  .filter-btn {
+    font-size: 0.875rem;
+    padding: 10px 14px;
+    width: 100%;
+    text-align: center;
+    min-height: 44px; /* Минимальный размер для touch */
+  }
+
+  .clear-button {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 4px;
+    min-height: 44px; /* Минимальный размер для touch */
+    padding: 10px 16px;
+  }
+
+  .todos-list {
+    padding: 12px 16px;
+    max-height: calc(100vh - 400px);
+    min-height: 150px;
+  }
+
+  .todo-item {
+    padding: 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+  }
+
+  .todo-content {
+    gap: 10px;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+  }
+
+  .todo-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .delete-button {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  .empty-state p {
+    font-size: 1rem;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 375px) {
+  body {
+    padding: 8px;
+  }
+
+  .header {
+    padding: 20px 12px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .input-section {
+    padding: 12px;
+  }
+
+  .todo-input {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .add-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .filters {
+    padding: 10px 12px;
+  }
+
+  .todos-list {
+    padding: 10px 12px;
+    max-height: calc(100vh - 380px);
+  }
+
+  .todo-item {
+    padding: 12px;
+  }
+
+  .stats {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Ландшафтная ориентация на мобильных */
+@media (max-width: 640px) and (orientation: landscape) {
+  .header {
+    padding: 20px 16px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .todos-list {
+    max-height: calc(100vh - 300px);
+  }
+}
+
+/* Улучшение для touch-устройств */
+@media (hover: none) and (pointer: coarse) {
+  .add-button:active,
+  .filter-btn:active,
+  .clear-button:active,
+  .checkbox:active,
+  .delete-button:active {
+    transform: scale(0.95);
+  }
+
+  .todo-item:active {
+    transform: scale(0.98);
+  }
+
+  /* Убираем hover эффекты на touch устройствах */
+  .add-button:hover {
+    transform: none;
+  }
+
+  .todo-item:hover {
+    transform: none;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--border);
+    color: var(--text-secondary);
+  }
+
+  .delete-button:hover {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+}
+
