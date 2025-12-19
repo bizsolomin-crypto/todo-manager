@@ -563,6 +563,15 @@ function App() {
         {/* Контент вкладки "Календарь" */}
         {activeTab === 'calendar' && (
           <div className="tab-content">
+            {/* Кнопка добавления задачи в календаре */}
+            <div className="add-button-section">
+              <button className="add-button-large" onClick={handlePlusClick}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
             <div className="calendar-section">
               <div className="calendar-header">
                 <button 
@@ -686,6 +695,24 @@ function App() {
                           <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                       </button>
+                    <div className="calendar-tasks-header-actions">
+                      <button 
+                        className="calendar-add-task-btn"
+                        onClick={() => {
+                          setEditingId(null)
+                          setInputValue('')
+                          setSelectedCategory('none')
+                          setTaskDate(selectedDate.toISOString().split('T')[0])
+                          setShowModal(true)
+                        }}
+                        aria-label="Добавить задачу на эту дату"
+                        title="Добавить задачу на эту дату"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
                       <button 
                         className="calendar-close-date"
                         onClick={() => setSelectedDate(null)}
@@ -697,6 +724,7 @@ function App() {
                         </svg>
                       </button>
                     </div>
+                  </div>
                   </div>
                   {selectedDateTasks.length > 0 ? (
                     <div className="calendar-tasks-list">
