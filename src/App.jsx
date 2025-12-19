@@ -174,6 +174,11 @@ function App() {
             )}
           </>
         )}
+        {todo.reward && !todo.completed && (
+          <span className="reward-tag" title={`Награда: ${todo.reward}`}>
+            🏆 {todo.reward}
+          </span>
+        )}
         {!todo.completed && (
           <button
             className="edit-button"
@@ -622,6 +627,11 @@ function App() {
                               <span className="category-tag category-tag-old" title="Более 15 минут">
                                 <span>&gt;</span>
                                 <span>15 мин</span>
+                              </span>
+                            )}
+                            {todo.reward && (
+                              <span className="reward-tag" title={`Награда: ${todo.reward}`}>
+                                🏆 {todo.reward}
                               </span>
                             )}
                           </div>
