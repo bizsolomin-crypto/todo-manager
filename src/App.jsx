@@ -637,7 +637,13 @@ function App() {
                       <div 
                         key={day} 
                         className={`calendar-day ${isWeekend ? 'weekend' : 'workday'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasTasks ? 'has-tasks' : ''}`}
-                        onClick={() => setSelectedDate(date)}
+                        onClick={() => {
+                          setSelectedDate(date)
+                          // Если открыто модальное окно для добавления задачи, обновляем дату
+                          if (showModal && !editingId) {
+                            setTaskDate(date.toISOString().split('T')[0])
+                          }
+                        }}
                       >
                         <span className="calendar-day-number">{day}</span>
                         {hasTasks && (
@@ -662,16 +668,35 @@ function App() {
                         month: 'long' 
                       })}
                     </h3>
-                    <button 
-                      className="calendar-close-date"
-                      onClick={() => setSelectedDate(null)}
-                      aria-label="Закрыть"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
+                    <div className="calendar-tasks-header-actions">
+                      <button 
+                        className="calendar-add-task-btn"
+                        onClick={() => {
+                          setEditingId(null)
+                          setInputValue('')
+                          setSelectedCategory('none')
+                          setTaskDate(selectedDate.toISOString().split('T')[0])
+                          setShowModal(true)
+                        }}
+                        aria-label="Добавить задачу на эту дату"
+                        title="Добавить задачу на эту дату"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                      <button 
+                        className="calendar-close-date"
+                        onClick={() => setSelectedDate(null)}
+                        aria-label="Закрыть"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   {selectedDateTasks.length > 0 ? (
                     <div className="calendar-tasks-list">

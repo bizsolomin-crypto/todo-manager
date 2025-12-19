@@ -254,6 +254,31 @@
   padding: 0 4px;
 }
 
+.calendar-tasks-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-add-task-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.calendar-add-task-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
 .calendar-tasks-header h3 {
   font-size: 1.25rem;
   font-weight: 600;
