@@ -156,7 +156,7 @@ function App() {
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
               onClick={() => setFilter('all')}
             >
-              Все ({normalizedTodos.length})
+              Все ({activeTodos.length})
             </button>
             <button
               className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
