@@ -93,11 +93,6 @@ function App() {
             >
               Выполненные ({completedCount})
             </button>
-            {completedCount > 0 && (
-              <button className="clear-button" onClick={clearCompleted}>
-                Очистить выполненные
-              </button>
-            )}
           </div>
         )}
 
