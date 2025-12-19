@@ -160,12 +160,6 @@ function App() {
               Все ({normalizedTodos.length})
             </button>
             <button
-              className={`filter-btn ${filter === 'none' ? 'active' : ''}`}
-              onClick={() => setFilter('none')}
-            >
-              Без категории ({noneCategoryTodos.length})
-            </button>
-            <button
               className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
               onClick={() => setFilter('recent')}
             >
@@ -215,43 +209,6 @@ function App() {
           </div>
         )}
 
-        {/* Блок задач без категории */}
-        {filter === 'none' && noneCategoryTodos.length > 0 && (
-          <div className="todos-section">
-            <div className="section-header">
-              <h2>Без категории ({noneCategoryTodos.length})</h2>
-            </div>
-            <div className="todos-list">
-              {noneCategoryTodos.map(todo => (
-                <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-                  <div className="todo-content">
-                    <button
-                      className={`checkbox ${todo.completed ? 'checked' : ''}`}
-                      onClick={() => toggleTodo(todo.id)}
-                    >
-                      {todo.completed && (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      )}
-                    </button>
-                    <span className="todo-text">{todo.text}</span>
-                  </div>
-                  <button
-                    className="delete-button"
-                    onClick={() => deleteTodo(todo.id)}
-                    aria-label="Удалить задачу"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Блок задач менее 15 минут */}
         {filter === 'recent' && recentCount > 0 && (
@@ -332,17 +289,6 @@ function App() {
         {/* Пустое состояние при выборе конкретного фильтра */}
         {filter !== 'all' && normalizedTodos.length > 0 && (
           <>
-            {filter === 'none' && noneCategoryTodos.length === 0 && (
-              <div className="todos-list">
-                <div className="empty-state">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9 11l3 3L22 4"></path>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                  </svg>
-                  <p>Нет задач без категории</p>
-                </div>
-              </div>
-            )}
             {filter === 'recent' && recentCount === 0 && (
               <div className="todos-list">
                 <div className="empty-state">
