@@ -61,11 +61,12 @@ export function useTodos() {
     }
   }
 
-  const addTodo = async (text) => {
+  const addTodo = async (text, category = 'none') => {
     const newTodo = {
       text: text.trim(),
       completed: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      category: category || 'none'
     }
 
     // Оптимистичное обновление

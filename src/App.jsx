@@ -5,29 +5,38 @@ import './App.css'
 function App() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted } = useTodos()
   const [inputValue, setInputValue] = useState('')
-  const [showInput, setShowInput] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('none') // none, recent, old
+  const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
-      addTodo(inputValue)
+      addTodo(inputValue, selectedCategory)
       setInputValue('')
-      setShowInput(false)
+      setSelectedCategory('none')
+      setShowModal(false)
     }
   }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && e.ctrlKey) {
       handleAddTodo()
     }
     if (e.key === 'Escape') {
-      setShowInput(false)
+      setShowModal(false)
       setInputValue('')
+      setSelectedCategory('none')
     }
   }
 
   const handlePlusClick = () => {
-    setShowInput(true)
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setInputValue('')
+    setSelectedCategory('none')
   }
 
   // Нормализация данных для совместимости
@@ -35,20 +44,14 @@ function App() {
     id: todo.id,
     text: todo.text || '',
     completed: todo.completed || false,
-    created_at: todo.created_at || todo.createdAt || new Date().toISOString()
+    created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
+    category: todo.category || 'none' // none, recent, old
   })).filter(todo => todo.text) // Убираем задачи без текста
 
-  // Функция для проверки времени создания задачи
-  const getTaskAge = (createdAt) => {
-    const now = new Date()
-    const created = new Date(createdAt)
-    const diffMinutes = (now - created) / (1000 * 60)
-    return diffMinutes
-  }
-
-  // Разделяем задачи по времени создания
-  const recentTodos = normalizedTodos.filter(todo => getTaskAge(todo.created_at) < 15)
-  const oldTodos = normalizedTodos.filter(todo => getTaskAge(todo.created_at) >= 15)
+  // Разделяем задачи по категории
+  const recentTodos = normalizedTodos.filter(todo => todo.category === 'recent')
+  const oldTodos = normalizedTodos.filter(todo => todo.category === 'old')
+  const noneCategoryTodos = normalizedTodos.filter(todo => todo.category === 'none' || !todo.category)
 
   // Также разделяем по статусу для отображения
   const activeTodos = normalizedTodos.filter(todo => !todo.completed)
@@ -56,6 +59,7 @@ function App() {
 
   const recentCount = recentTodos.length
   const oldCount = oldTodos.length
+  const noneCount = noneCategoryTodos.length
 
   return (
     <div className="app">
@@ -77,40 +81,73 @@ function App() {
           </div>
         )}
 
-        {showInput ? (
-          <div className="input-section">
-            <div className="input-wrapper">
-              <input
-                type="text"
-                className="todo-input"
-                placeholder="Введите задачу..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                autoFocus
-              />
-              <button className="add-button" onClick={handleAddTodo}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </button>
-              <button className="cancel-button" onClick={() => { setShowInput(false); setInputValue(''); }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+        <div className="add-button-section">
+          <button className="add-button-large" onClick={handlePlusClick}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        {showModal && (
+          <div className="modal-overlay" onClick={handleCloseModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Добавить задачу</h2>
+                <button className="modal-close" onClick={handleCloseModal}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="modal-input-group">
+                  <label>Название задачи</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    placeholder="Введите название задачи..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    autoFocus
+                  />
+                </div>
+                <div className="modal-category-group">
+                  <label>Категория</label>
+                  <div className="category-buttons">
+                    <button
+                      className={`category-btn ${selectedCategory === 'none' ? 'active' : ''}`}
+                      onClick={() => setSelectedCategory('none')}
+                    >
+                      Без категории
+                    </button>
+                    <button
+                      className={`category-btn ${selectedCategory === 'recent' ? 'active' : ''}`}
+                      onClick={() => setSelectedCategory('recent')}
+                    >
+                      Менее 15 минут
+                    </button>
+                    <button
+                      className={`category-btn ${selectedCategory === 'old' ? 'active' : ''}`}
+                      onClick={() => setSelectedCategory('old')}
+                    >
+                      Более 15 минут
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="modal-cancel-btn" onClick={handleCloseModal}>
+                  Отмена
+                </button>
+                <button className="modal-add-btn" onClick={handleAddTodo} disabled={!inputValue.trim()}>
+                  Добавить
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="add-button-section">
-            <button className="add-button-large" onClick={handlePlusClick}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </button>
           </div>
         )}
 
@@ -121,6 +158,12 @@ function App() {
               onClick={() => setFilter('all')}
             >
               Все ({normalizedTodos.length})
+            </button>
+            <button
+              className={`filter-btn ${filter === 'none' ? 'active' : ''}`}
+              onClick={() => setFilter('none')}
+            >
+              Без категории ({noneCategoryTodos.length})
             </button>
             <button
               className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
@@ -134,6 +177,44 @@ function App() {
             >
               Более 15 минут ({oldCount})
             </button>
+          </div>
+        )}
+
+        {/* Блок задач без категории */}
+        {(filter === 'all' || filter === 'none') && noneCategoryTodos.length > 0 && (
+          <div className="todos-section">
+            <div className="section-header">
+              <h2>Без категории ({noneCategoryTodos.length})</h2>
+            </div>
+            <div className="todos-list">
+              {noneCategoryTodos.map(todo => (
+                <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                  <div className="todo-content">
+                    <button
+                      className={`checkbox ${todo.completed ? 'checked' : ''}`}
+                      onClick={() => toggleTodo(todo.id)}
+                    >
+                      {todo.completed && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
+                    </button>
+                    <span className="todo-text">{todo.text}</span>
+                  </div>
+                  <button
+                    className="delete-button"
+                    onClick={() => deleteTodo(todo.id)}
+                    aria-label="Удалить задачу"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

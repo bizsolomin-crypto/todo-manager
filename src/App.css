@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .app {
   width: 100%;
 }
@@ -8,7 +14,6 @@
   box-shadow: 0 20px 60px var(--shadow-lg);
   overflow: hidden;
   animation: slideUp 0.4s ease-out;
-  /* Предотвращение переполнения на мобильных */
   max-width: 100%;
 }
 
@@ -118,7 +123,6 @@
   transition: all 0.2s ease;
   background: var(--surface);
   color: var(--text-primary);
-  /* Улучшение для мобильных устройств */
   -webkit-appearance: none;
   appearance: none;
 }
@@ -193,24 +197,6 @@
   background: var(--primary);
   color: white;
   border-color: var(--primary);
-}
-
-.clear-button {
-  padding: 8px 16px;
-  border: 2px solid var(--danger);
-  background: transparent;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--danger);
-  margin-left: auto;
-}
-
-.clear-button:hover {
-  background: var(--danger);
-  color: white;
 }
 
 .todos-section {
@@ -373,17 +359,6 @@
   font-size: 1.1rem;
 }
 
-.stats {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px 30px;
-  background: var(--background);
-  border-top: 1px solid var(--border);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
 .error-banner {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid var(--danger);
@@ -399,6 +374,192 @@
   text-align: center;
   padding: 40px 20px;
   color: var(--text-secondary);
+}
+
+/* Модальное окно */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-input-group {
+  margin-bottom: 24px;
+}
+
+.modal-input-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.modal-category-group {
+  margin-bottom: 0;
+}
+
+.modal-category-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.category-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-btn {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.category-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.category-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+}
+
+.modal-cancel-btn {
+  padding: 10px 20px;
+  border: 2px solid var(--border);
+  background: transparent;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.modal-cancel-btn:hover {
+  border-color: var(--text-secondary);
+  background: var(--background);
+}
+
+.modal-add-btn {
+  padding: 10px 24px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.modal-add-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.modal-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Скроллбар */
@@ -448,7 +609,7 @@
   body {
     padding: 8px;
     min-height: 100vh;
-    min-height: -webkit-fill-available; /* Для iOS Safari */
+    min-height: -webkit-fill-available;
   }
 
   .container {
@@ -457,7 +618,7 @@
     margin: 0;
     max-width: 100%;
     min-height: calc(100vh - 16px);
-    min-height: calc(100dvh - 16px); /* Динамическая высота viewport */
+    min-height: calc(100dvh - 16px);
   }
 
   .header {
@@ -494,10 +655,10 @@
 
   .todo-input {
     padding: 14px 16px;
-    font-size: 16px; /* Предотвращает зум на iOS */
+    font-size: 16px;
     border-radius: 12px;
     flex: 1;
-    min-width: 0; /* Предотвращает переполнение */
+    min-width: 0;
   }
 
   .add-button {
@@ -551,7 +712,7 @@
     max-height: calc(100dvh - 420px);
     min-height: 100px;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+    -webkit-overflow-scrolling: touch;
   }
 
   .completed-list {
@@ -563,7 +724,7 @@
     padding: 16px;
     margin-bottom: 12px;
     border-radius: 12px;
-    touch-action: manipulation; /* Убирает задержку на touch */
+    touch-action: manipulation;
   }
 
   .todo-content {
@@ -615,21 +776,6 @@
     padding: 0 10px;
   }
 
-  .stats {
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 8px;
-    text-align: center;
-    padding: 12px 16px;
-    font-size: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .stats span {
-    flex: 1;
-    min-width: 80px;
-  }
-
   .error-banner {
     margin: 0 16px 16px;
     padding: 10px 16px;
@@ -638,6 +784,52 @@
 
   .loading-state {
     padding: 30px 16px;
+  }
+
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0;
+    padding-bottom: 12px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-input-group {
+    margin-bottom: 20px;
+  }
+
+  .category-buttons {
+    gap: 8px;
+  }
+
+  .category-btn {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .modal-footer {
+    padding: 12px 20px 20px;
+    flex-direction: column-reverse;
+  }
+
+  .modal-cancel-btn,
+  .modal-add-btn {
+    width: 100%;
+    padding: 12px;
   }
 }
 
@@ -667,14 +859,18 @@
     padding: 14px;
   }
 
+  .add-button-section {
+    padding: 16px;
+  }
+
   .todo-input {
     padding: 12px 14px;
     font-size: 16px;
   }
 
-  .add-button {
-    width: 44px;
-    height: 44px;
+  .add-button-large {
+    width: 48px;
+    height: 48px;
   }
 
   .filters {
@@ -715,13 +911,6 @@
     min-width: 40px;
     min-height: 40px;
   }
-
-  .stats {
-    padding: 10px 14px;
-    font-size: 0.7rem;
-    flex-direction: column;
-    gap: 4px;
-  }
 }
 
 /* Ландшафтная ориентация на мобильных */
@@ -745,7 +934,10 @@
   .filter-btn:active,
   .clear-button:active,
   .checkbox:active,
-  .delete-button:active {
+  .delete-button:active,
+  .category-btn:active,
+  .modal-add-btn:active,
+  .modal-cancel-btn:active {
     transform: scale(0.95);
   }
 
@@ -753,7 +945,6 @@
     transform: scale(0.98);
   }
 
-  /* Убираем hover эффекты на touch устройствах */
   .add-button:hover {
     transform: none;
   }
@@ -772,4 +963,3 @@
     color: var(--text-secondary);
   }
 }
-
