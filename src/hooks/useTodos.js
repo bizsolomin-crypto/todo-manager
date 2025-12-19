@@ -22,16 +22,50 @@ export function useTodos() {
           setTimeout(() => reject(new Error('Request timeout')), 3000)
         )
         
+        // Пытаемся загрузить без category сначала, если ошибка - пробуем с явным указанием колонок
         const queryPromise = supabase
           .from('todos')
-          .select('*')
+          .select('id, text, completed, created_at, updated_at')
           .order('created_at', { ascending: false })
 
         try {
-          const { data, error: supabaseError } = await Promise.race([
+          let { data, error: supabaseError } = await Promise.race([
             queryPromise,
             timeoutPromise
           ])
+
+          // Если ошибка из-за отсутствия колонки category, пробуем загрузить без неё
+          if (supabaseError && (supabaseError.message.includes('category') || supabaseError.message.includes('column'))) {
+            // Пробуем загрузить с category, если ошибка - загружаем без неё
+            const fallbackQuery = supabase
+              .from('todos')
+              .select('*')
+              .order('created_at', { ascending: false })
+            
+            const fallbackResult = await Promise.race([
+              fallbackQuery,
+              timeoutPromise
+            ])
+            
+            if (fallbackResult.error) {
+              // Если и это не работает, используем только базовые колонки
+              const basicQuery = supabase
+                .from('todos')
+                .select('id, text, completed, created_at')
+                .order('created_at', { ascending: false })
+              
+              const basicResult = await Promise.race([
+                basicQuery,
+                timeoutPromise
+              ])
+              
+              if (basicResult.error) throw basicResult.error
+              data = basicResult.data
+            } else {
+              data = fallbackResult.data
+            }
+            supabaseError = null
+          }
 
           if (supabaseError) {
             // Проверяем, не проблема ли это с таблицей
@@ -40,7 +74,14 @@ export function useTodos() {
             }
             throw supabaseError
           }
-          setTodos(data || [])
+          
+          // Добавляем category по умолчанию, если её нет
+          const todosWithCategory = (data || []).map(todo => ({
+            ...todo,
+            category: todo.category || 'none'
+          }))
+          
+          setTodos(todosWithCategory)
         } catch (timeoutError) {
           // При таймауте используем localStorage
           throw new Error('Supabase не отвечает. Используется локальное хранилище.')
@@ -65,13 +106,8 @@ export function useTodos() {
     const newTodo = {
       text: text.trim(),
       completed: false,
-      created_at: new Date().toISOString()
-    }
-    
-    // Добавляем category только если колонка существует
-    // Если нет - будет использоваться fallback на localStorage
-    if (category && category !== 'none') {
-      newTodo.category = category
+      created_at: new Date().toISOString(),
+      category: category || 'none'
     }
 
     // Оптимистичное обновление
