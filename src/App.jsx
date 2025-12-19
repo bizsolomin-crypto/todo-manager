@@ -89,7 +89,26 @@ function App() {
           <p className="subtitle">Организуйте свою жизнь</p>
         </header>
 
-        {error && (
+        {/* Вкладки */}
+        <div className="tabs">
+          <button
+            className={`tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
+            onClick={() => setActiveTab('tasks')}
+          >
+            Задачи
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'calendar' ? 'active' : ''}`}
+            onClick={() => setActiveTab('calendar')}
+          >
+            Календарь
+          </button>
+        </div>
+
+        {/* Контент вкладки "Задачи" */}
+        {activeTab === 'tasks' && (
+          <div className="tab-content">
+            {error && (
           <div className="error-banner">
             Ошибка: {error}. Используется локальное хранилище.
           </div>
@@ -497,7 +516,26 @@ function App() {
             )}
           </>
         )}
+          </div>
+        )}
 
+        {/* Контент вкладки "Календарь" */}
+        {activeTab === 'calendar' && (
+          <div className="tab-content">
+            <div className="calendar-section">
+              <div className="calendar-placeholder">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <p>Календарь</p>
+                <p className="placeholder-subtitle">Функция календаря будет добавлена позже</p>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
