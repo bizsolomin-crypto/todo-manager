@@ -7,6 +7,7 @@ function App() {
   const [inputValue, setInputValue] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('none')
   const [taskDate, setTaskDate] = useState('')
+  const [reward, setReward] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all')
   const [editingId, setEditingId] = useState(null)
@@ -35,6 +36,7 @@ function App() {
     setInputValue('')
     setSelectedCategory('none')
     setTaskDate('')
+    setReward('')
     setEditingId(null)
   }
 
@@ -46,11 +48,12 @@ function App() {
       updateTodo(editingId, {
         text: inputValue.trim(),
         category: selectedCategory,
-        task_date: taskDate || todo?.task_date || null
+        task_date: taskDate || todo?.task_date || null,
+        reward: reward.trim() || null
       })
     } else {
       const finalDate = taskDate || (selectedDate ? formatDateForInput(selectedDate) : null)
-      addTodo(inputValue, selectedCategory, finalDate)
+      addTodo(inputValue, selectedCategory, finalDate, reward.trim() || null)
     }
     resetModal()
     setShowModal(false)
@@ -83,6 +86,7 @@ function App() {
     setInputValue(todo.text)
     setSelectedCategory(todo.category || 'none')
     setTaskDate(todo.task_date ? formatDateForInput(todo.task_date) : '')
+    setReward(todo.reward || '')
     setShowModal(true)
   }
 
@@ -274,6 +278,17 @@ function App() {
                         className="modal-date-input"
                         value={taskDate}
                         onChange={(e) => handleDateChange(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                      />
+                    </div>
+                    <div className="modal-reward-group">
+                      <label>Награда</label>
+                      <input
+                        type="text"
+                        className="modal-input"
+                        placeholder="Введите награду за выполнение задачи..."
+                        value={reward}
+                        onChange={(e) => setReward(e.target.value)}
                         onKeyDown={handleKeyPress}
                       />
                     </div>

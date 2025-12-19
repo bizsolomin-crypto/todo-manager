@@ -70,13 +70,14 @@ export function useTodos() {
     localStorage.setItem('todos', JSON.stringify(updatedTodos))
   }
 
-  const addTodo = async (text, category = 'none', taskDate = null) => {
+  const addTodo = async (text, category = 'none', taskDate = null, reward = null) => {
     const newTodo = {
       text: text.trim(),
       completed: false,
       created_at: new Date().toISOString(),
       category: category || 'none',
-      task_date: taskDate || null
+      task_date: taskDate || null,
+      reward: reward || null
     }
 
     const tempTodo = {
@@ -203,7 +204,8 @@ export function useTodos() {
       ...todo, 
       ...updates,
       category: updates.category !== undefined ? updates.category : (todo.category || 'none'),
-      task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null)
+      task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null),
+      reward: updates.reward !== undefined ? updates.reward : (todo.reward || null)
     }
 
     setTodos(todos.map(t => t.id === id ? updatedTodo : t))
@@ -217,7 +219,8 @@ export function useTodos() {
         const updateData = { 
           ...updates,
           category: updates.category !== undefined ? updates.category : (todo.category || 'none'),
-          task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null)
+          task_date: updates.task_date !== undefined ? updates.task_date : (todo.task_date || null),
+          reward: updates.reward !== undefined ? updates.reward : (todo.reward || null)
         }
 
         const updatePromise = supabase
