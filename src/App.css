@@ -875,6 +875,18 @@
   margin-bottom: 24px;
 }
 
+.modal-reward-group {
+  margin-bottom: 24px;
+}
+
+.modal-reward-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
 .modal-date-group label {
   display: block;
   font-size: 0.875rem;

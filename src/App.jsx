@@ -111,7 +111,8 @@ function App() {
     completed: todo.completed || false,
     created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
     category: todo.category || 'none',
-    task_date: todo.task_date || null
+    task_date: todo.task_date || null,
+    reward: todo.reward || null
   })).filter(todo => todo.text)
 
   // Фильтрация задач

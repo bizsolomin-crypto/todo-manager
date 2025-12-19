@@ -45,7 +45,8 @@ export function useTodos() {
             created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
             updated_at: todo.updated_at || todo.updatedAt,
             category: todo.category || 'none',
-            task_date: todo.task_date || null
+            task_date: todo.task_date || null,
+            reward: todo.reward || null
           }))
           
           setTodos(todosWithCategory)
