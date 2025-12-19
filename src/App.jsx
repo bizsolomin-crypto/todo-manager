@@ -18,17 +18,20 @@ function App() {
     if (inputValue.trim()) {
       if (editingId) {
         // Редактирование существующей задачи
+        const todo = normalizedTodos.find(t => t.id === editingId)
         updateTodo(editingId, {
           text: inputValue.trim(),
-          category: selectedCategory
+          category: selectedCategory,
+          task_date: taskDate || (todo?.task_date || null)
         })
         setEditingId(null)
       } else {
         // Добавление новой задачи
-        addTodo(inputValue, selectedCategory)
+        addTodo(inputValue, selectedCategory, taskDate)
       }
       setInputValue('')
       setSelectedCategory('none')
+      setTaskDate('')
       setShowModal(false)
     }
   }
