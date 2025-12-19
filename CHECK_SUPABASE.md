@@ -61,3 +61,4 @@ ALTER TABLE todos DISABLE ROW LEVEL SECURITY;
 - Приложение автоматически переключится на localStorage
 - Задачи будут сохраняться локально в браузере
 
+

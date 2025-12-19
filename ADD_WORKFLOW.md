@@ -40,3 +40,4 @@
 - ✅ Таблица `todos` создана в Supabase (выполнен SQL скрипт)
 - ✅ GitHub Pages настроен на "GitHub Actions"
 
+

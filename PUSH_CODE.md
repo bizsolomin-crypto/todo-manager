@@ -34,3 +34,4 @@ git push -u origin main
 3. File → Add Local Repository → выберите папку `/Users/sergey/Desktop/тудушка`
 4. Нажмите "Publish repository"
 
+

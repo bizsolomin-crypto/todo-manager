@@ -106,23 +106,28 @@
 
 .filters {
   display: flex;
-  gap: 8px;
-  padding: 20px 30px;
-  flex-wrap: wrap;
+  gap: 6px;
+  padding: 16px 30px;
+  flex-wrap: nowrap;
   border-bottom: 1px solid var(--border);
   background: var(--background);
+  justify-content: center;
+  align-items: center;
 }
 
 .filter-btn {
-  padding: 8px 16px;
+  padding: 6px 12px;
   border: 2px solid var(--border);
   background: var(--surface);
-  border-radius: 8px;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--text-secondary);
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .filter-btn:hover {
@@ -442,26 +447,19 @@
 
   .filters {
     padding: 12px 16px;
-    gap: 8px;
-    flex-direction: column;
+    gap: 6px;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .filter-btn {
-    font-size: 0.9rem;
-    padding: 12px 16px;
-    width: 100%;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+    flex: 1;
+    min-width: 0;
     text-align: center;
-    min-height: 48px;
-    border-radius: 10px;
-  }
-
-  .clear-button {
-    width: 100%;
-    margin-left: 0;
-    margin-top: 0;
-    min-height: 48px;
-    padding: 12px 16px;
-    border-radius: 10px;
+    min-height: 36px;
+    border-radius: 8px;
   }
 
   .todos-section {
@@ -618,11 +616,13 @@
 
   .filters {
     padding: 10px 14px;
+    gap: 4px;
   }
 
   .filter-btn {
-    padding: 10px 14px;
-    font-size: 0.85rem;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    min-height: 32px;
   }
 
   .todos-list {
