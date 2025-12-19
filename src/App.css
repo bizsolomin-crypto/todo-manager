@@ -871,15 +871,18 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+.modal-row-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .modal-date-group {
-  margin-bottom: 24px;
+  flex: 0 0 auto;
+  min-width: 160px;
 }
 
-.modal-reward-group {
-  margin-bottom: 24px;
-}
-
-.modal-reward-group label {
+.modal-date-group label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
@@ -887,7 +890,12 @@
   margin-bottom: 8px;
 }
 
-.modal-date-group label {
+.modal-reward-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-reward-group label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1047,6 +1055,19 @@
 
   .input-section {
     padding: 25px;
+  }
+
+  .modal-row-group {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .modal-date-group {
+    min-width: 100%;
+  }
+
+  .modal-reward-group {
+    min-width: 100%;
   }
 }
 
