@@ -17,11 +17,20 @@ export function useTodos() {
 
     try {
       if (supabase) {
-        // Используем Supabase
-        const { data, error: supabaseError } = await supabase
+        // Используем Supabase с таймаутом
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Request timeout')), 5000)
+        )
+        
+        const queryPromise = supabase
           .from('todos')
           .select('*')
           .order('created_at', { ascending: false })
+
+        const { data, error: supabaseError } = await Promise.race([
+          queryPromise,
+          timeoutPromise
+        ])
 
         if (supabaseError) throw supabaseError
         setTodos(data || [])
@@ -48,6 +57,13 @@ export function useTodos() {
       created_at: new Date().toISOString()
     }
 
+    // Оптимистичное обновление
+    const tempTodo = {
+      id: `temp-${Date.now()}`,
+      ...newTodo
+    }
+    setTodos([tempTodo, ...todos])
+
     try {
       if (supabase) {
         const { data, error: supabaseError } = await supabase
@@ -57,25 +73,26 @@ export function useTodos() {
           .single()
 
         if (supabaseError) throw supabaseError
-        setTodos([data, ...todos])
+        // Заменяем временную задачу на реальную
+        setTodos([data, ...todos.filter(t => t.id !== tempTodo.id)])
       } else {
         const todo = {
           id: Date.now(),
           ...newTodo
         }
-        const updatedTodos = [todo, ...todos]
+        const updatedTodos = [todo, ...todos.filter(t => t.id !== tempTodo.id)]
         setTodos(updatedTodos)
         localStorage.setItem('todos', JSON.stringify(updatedTodos))
       }
     } catch (err) {
       console.error('Error adding todo:', err)
       setError(err.message)
-      // Fallback
+      // Откатываем оптимистичное обновление и используем fallback
       const todo = {
         id: Date.now(),
         ...newTodo
       }
-      const updatedTodos = [todo, ...todos]
+      const updatedTodos = [todo, ...todos.filter(t => t.id !== tempTodo.id)]
       setTodos(updatedTodos)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
     }
@@ -87,6 +104,9 @@ export function useTodos() {
 
     const updatedTodo = { ...todo, completed: !todo.completed }
 
+    // Оптимистичное обновление
+    setTodos(todos.map(t => t.id === id ? updatedTodo : t))
+
     try {
       if (supabase) {
         const { error: supabaseError } = await supabase
@@ -94,8 +114,11 @@ export function useTodos() {
           .update({ completed: updatedTodo.completed })
           .eq('id', id)
 
-        if (supabaseError) throw supabaseError
-        setTodos(todos.map(t => t.id === id ? updatedTodo : t))
+        if (supabaseError) {
+          throw supabaseError
+        }
+        // Перезагружаем для синхронизации
+        await loadTodos()
       } else {
         const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
         setTodos(updatedTodos)
@@ -104,14 +127,22 @@ export function useTodos() {
     } catch (err) {
       console.error('Error toggling todo:', err)
       setError(err.message)
+      // Откатываем изменение
+      setTodos(todos.map(t => t.id === id ? todo : t))
       // Fallback
       const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
-      setTodos(updatedTodos)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
     }
   }
 
   const deleteTodo = async (id) => {
+    const todoToDelete = todos.find(t => t.id === id)
+    if (!todoToDelete) return
+
+    // Оптимистичное обновление
+    const previousTodos = todos
+    setTodos(todos.filter(t => t.id !== id))
+
     try {
       if (supabase) {
         const { error: supabaseError } = await supabase
@@ -119,8 +150,11 @@ export function useTodos() {
           .delete()
           .eq('id', id)
 
-        if (supabaseError) throw supabaseError
-        setTodos(todos.filter(t => t.id !== id))
+        if (supabaseError) {
+          throw supabaseError
+        }
+        // Перезагружаем для синхронизации
+        await loadTodos()
       } else {
         const updatedTodos = todos.filter(t => t.id !== id)
         setTodos(updatedTodos)
@@ -129,9 +163,10 @@ export function useTodos() {
     } catch (err) {
       console.error('Error deleting todo:', err)
       setError(err.message)
+      // Откатываем удаление
+      setTodos(previousTodos)
       // Fallback
-      const updatedTodos = todos.filter(t => t.id !== id)
-      setTodos(updatedTodos)
+      const updatedTodos = previousTodos.filter(t => t.id !== id)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
     }
   }

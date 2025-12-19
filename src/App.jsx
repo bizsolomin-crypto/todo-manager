@@ -20,21 +20,21 @@ function App() {
     }
   }
 
-  const filteredTodos = todos.filter(todo => {
+  // Нормализация данных для совместимости
+  const normalizedTodos = todos.map(todo => ({
+    id: todo.id,
+    text: todo.text || '',
+    completed: todo.completed || false
+  })).filter(todo => todo.text) // Убираем задачи без текста
+
+  const filteredTodos = normalizedTodos.filter(todo => {
     if (filter === 'active') return !todo.completed
     if (filter === 'completed') return todo.completed
     return true
   })
 
-  const activeCount = todos.filter(todo => !todo.completed).length
-  const completedCount = todos.filter(todo => todo.completed).length
-
-  // Нормализация данных для совместимости
-  const normalizedTodos = todos.map(todo => ({
-    id: todo.id,
-    text: todo.text,
-    completed: todo.completed || false
-  }))
+  const activeCount = normalizedTodos.filter(todo => !todo.completed).length
+  const completedCount = normalizedTodos.filter(todo => todo.completed).length
 
   return (
     <div className="app">
