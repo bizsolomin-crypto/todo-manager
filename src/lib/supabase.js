@@ -8,6 +8,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10
+        }
+      }
+    })
   : null
+
+// Проверка подключения
+if (supabase) {
+  supabase.from('todos').select('count').limit(1)
+    .then(() => console.log('✅ Supabase подключен'))
+    .catch((err) => console.warn('⚠️ Ошибка подключения к Supabase:', err.message))
+}
 

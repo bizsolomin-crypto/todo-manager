@@ -26,17 +26,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed; /* Фиксированный фон на мобильных */
   min-height: 100vh;
+  min-height: -webkit-fill-available; /* Для iOS Safari */
   padding: 20px;
   color: var(--text-primary);
   /* Предотвращение горизонтального скролла на мобильных */
   overflow-x: hidden;
+  /* Улучшение производительности на мобильных */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 #root {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  /* Предотвращение переполнения на мобильных */
+  min-width: 0;
 }
 
 /* Улучшенная поддержка touch-устройств */

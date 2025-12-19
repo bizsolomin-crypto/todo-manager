@@ -19,7 +19,7 @@ export function useTodos() {
       if (supabase) {
         // Используем Supabase с таймаутом
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Request timeout')), 5000)
+          setTimeout(() => reject(new Error('Request timeout')), 3000)
         )
         
         const queryPromise = supabase
@@ -27,13 +27,24 @@ export function useTodos() {
           .select('*')
           .order('created_at', { ascending: false })
 
-        const { data, error: supabaseError } = await Promise.race([
-          queryPromise,
-          timeoutPromise
-        ])
+        try {
+          const { data, error: supabaseError } = await Promise.race([
+            queryPromise,
+            timeoutPromise
+          ])
 
-        if (supabaseError) throw supabaseError
-        setTodos(data || [])
+          if (supabaseError) {
+            // Проверяем, не проблема ли это с таблицей
+            if (supabaseError.code === '42P01' || supabaseError.message.includes('relation') || supabaseError.message.includes('does not exist')) {
+              throw new Error('Таблица todos не найдена. Выполните SQL скрипт в Supabase.')
+            }
+            throw supabaseError
+          }
+          setTodos(data || [])
+        } catch (timeoutError) {
+          // При таймауте используем localStorage
+          throw new Error('Supabase не отвечает. Используется локальное хранилище.')
+        }
       } else {
         // Fallback на localStorage
         const saved = localStorage.getItem('todos')
