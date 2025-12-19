@@ -650,6 +650,21 @@
   border: 1px solid rgba(168, 85, 247, 0.2);
 }
 
+.reward-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.15) 100%);
+  border: 1.5px solid rgba(255, 215, 0, 0.4);
+  color: rgba(255, 193, 7, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .checkbox {
   width: 24px;
   height: 24px;
