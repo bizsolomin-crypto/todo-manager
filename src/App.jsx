@@ -190,13 +190,6 @@ function App() {
           </div>
         )}
 
-        {normalizedTodos.length > 0 && (
-          <div className="stats">
-            <span>Всего задач: {normalizedTodos.length}</span>
-            <span>Активных: {activeCount}</span>
-            <span>Выполнено: {completedCount}</span>
-          </div>
-        )}
       </div>
     </div>
   )
