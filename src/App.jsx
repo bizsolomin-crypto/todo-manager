@@ -9,11 +9,20 @@ function App() {
   const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
   const [editingId, setEditingId] = useState(null)
-  const [editValue, setEditValue] = useState('')
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
-      addTodo(inputValue, selectedCategory)
+      if (editingId) {
+        // Редактирование существующей задачи
+        updateTodo(editingId, {
+          text: inputValue.trim(),
+          category: selectedCategory
+        })
+        setEditingId(null)
+      } else {
+        // Добавление новой задачи
+        addTodo(inputValue, selectedCategory)
+      }
       setInputValue('')
       setSelectedCategory('none')
       setShowModal(false)
@@ -28,6 +37,7 @@ function App() {
       setShowModal(false)
       setInputValue('')
       setSelectedCategory('none')
+      setEditingId(null)
     }
   }
 
@@ -39,43 +49,14 @@ function App() {
     setShowModal(false)
     setInputValue('')
     setSelectedCategory('none')
+    setEditingId(null)
   }
 
   const handleEditStart = (todo) => {
     setEditingId(todo.id)
-    setEditValue(todo.text)
-  }
-
-  const handleEditSave = (id) => {
-    if (editValue.trim()) {
-      const todo = normalizedTodos.find(t => t.id === id)
-      if (todo) {
-        // Сохраняем категорию при обновлении текста
-        updateTodo(id, { 
-          text: editValue.trim(),
-          category: todo.category || 'none'
-        })
-      } else {
-        updateTodo(id, { text: editValue.trim() })
-      }
-    }
-    setEditingId(null)
-    setEditValue('')
-  }
-
-  const handleEditCancel = () => {
-    setEditingId(null)
-    setEditValue('')
-  }
-
-  const handleEditKeyPress = (e, id) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleEditSave(id)
-    }
-    if (e.key === 'Escape') {
-      handleEditCancel()
-    }
+    setInputValue(todo.text)
+    setSelectedCategory(todo.category || 'none')
+    setShowModal(true)
   }
 
   // Нормализация данных для совместимости
@@ -230,63 +211,47 @@ function App() {
                           onClick={() => toggleTodo(todo.id)}
                         >
                         </button>
-                        {editingId === todo.id ? (
-                          <input
-                            type="text"
-                            className="edit-input"
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onBlur={() => handleEditSave(todo.id)}
-                            onKeyDown={(e) => handleEditKeyPress(e, todo.id)}
-                            autoFocus
-                          />
-                        ) : (
-                          <>
-                            <span 
-                              className="todo-text"
-                              onDoubleClick={() => handleEditStart(todo)}
-                              title="Двойной клик для редактирования"
-                            >
-                              {todo.text}
-                            </span>
-                            {todo.category === 'recent' && (
-                              <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                                <span>&lt;</span>
-                                <span>15 мин</span>
-                              </span>
-                            )}
-                            {todo.category === 'old' && (
-                              <span className="category-tag category-tag-old" title="Более 15 минут">
-                                <span>&gt;</span>
-                                <span>15 мин</span>
-                              </span>
-                            )}
-                            <button
-                              className="edit-button"
-                              onClick={() => handleEditStart(todo)}
-                              aria-label="Редактировать задачу"
-                              title="Редактировать"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                              </svg>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                      {editingId !== todo.id && (
-                        <button
-                          className="delete-button"
-                          onClick={() => deleteTodo(todo.id)}
-                          aria-label="Удалить задачу"
+                        <span 
+                          className="todo-text"
+                          onDoubleClick={() => handleEditStart(todo)}
+                          title="Двойной клик для редактирования"
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          {todo.text}
+                        </span>
+                        {todo.category === 'recent' && (
+                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                            <span>&lt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
+                        {todo.category === 'old' && (
+                          <span className="category-tag category-tag-old" title="Более 15 минут">
+                            <span>&gt;</span>
+                            <span>15 мин</span>
+                          </span>
+                        )}
+                        <button
+                          className="edit-button"
+                          onClick={() => handleEditStart(todo)}
+                          aria-label="Редактировать задачу"
+                          title="Редактировать"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                           </svg>
                         </button>
-                      )}
+                      </div>
+                      <button
+                        className="delete-button"
+                        onClick={() => deleteTodo(todo.id)}
+                        aria-label="Удалить задачу"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
                     </div>
                   ))}
                 </div>
