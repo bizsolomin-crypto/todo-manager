@@ -286,12 +286,21 @@ function App() {
                       <div className="modal-reward-group">
                         <label>Награда</label>
                         <input
-                          type="text"
-                          className="modal-input"
-                          placeholder="Введите награду..."
+                          type="number"
+                          className="modal-input modal-reward-input"
+                          placeholder="0"
                           value={reward}
-                          onChange={(e) => setReward(e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value
+                            // Ограничиваем до 3 цифр
+                            if (value === '' || (value.length <= 3 && /^\d+$/.test(value))) {
+                              setReward(value)
+                            }
+                          }}
                           onKeyDown={handleKeyPress}
+                          min="0"
+                          max="999"
+                          maxLength={3}
                         />
                       </div>
                     </div>

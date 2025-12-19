@@ -878,8 +878,8 @@
 }
 
 .modal-date-group {
-  flex: 0 0 auto;
-  min-width: 160px;
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-date-group label {
@@ -891,8 +891,9 @@
 }
 
 .modal-reward-group {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 auto;
+  min-width: 100px;
+  max-width: 120px;
 }
 
 .modal-reward-group label {
@@ -901,6 +902,11 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 8px;
+}
+
+.modal-reward-input {
+  text-align: center;
+  padding: 14px 12px;
 }
 
 .modal-date-input {
@@ -1058,16 +1064,22 @@
   }
 
   .modal-row-group {
-    flex-direction: column;
-    gap: 20px;
+    gap: 10px;
   }
 
   .modal-date-group {
-    min-width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .modal-reward-group {
-    min-width: 100%;
+    min-width: 80px;
+    max-width: 90px;
+  }
+
+  .modal-reward-input {
+    padding: 12px 8px;
+    font-size: 0.95rem;
   }
 }
 
