@@ -162,14 +162,22 @@ function App() {
             <button
               className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
               onClick={() => setFilter('recent')}
+              title="Менее 15 минут"
             >
-              Менее 15 минут ({recentCount})
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+              15 мин ({recentCount})
             </button>
             <button
               className={`filter-btn ${filter === 'old' ? 'active' : ''}`}
               onClick={() => setFilter('old')}
+              title="Более 15 минут"
             >
-              Более 15 минут ({oldCount})
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              15 мин ({oldCount})
             </button>
           </div>
         )}
