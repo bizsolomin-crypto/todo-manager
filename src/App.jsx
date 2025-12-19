@@ -3,76 +3,18 @@ import { useTodos } from './hooks/useTodos'
 import './App.css'
 
 function App() {
-  const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted, updateTodo } = useTodos()
+  const { todos, loading, error, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodos()
   const [inputValue, setInputValue] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('none') // none, recent, old
-  const [taskDate, setTaskDate] = useState('') // Дата задачи в модальном окне
+  const [selectedCategory, setSelectedCategory] = useState('none')
+  const [taskDate, setTaskDate] = useState('')
   const [showModal, setShowModal] = useState(false)
-  const [filter, setFilter] = useState('all') // all, recent, old
+  const [filter, setFilter] = useState('all')
   const [editingId, setEditingId] = useState(null)
-  const [activeTab, setActiveTab] = useState('tasks') // tasks, calendar
+  const [activeTab, setActiveTab] = useState('tasks')
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(null)
 
-  const handleAddTodo = () => {
-    if (inputValue.trim()) {
-      if (editingId) {
-        // Редактирование существующей задачи
-        const todo = normalizedTodos.find(t => t.id === editingId)
-        updateTodo(editingId, {
-          text: inputValue.trim(),
-          category: selectedCategory,
-          task_date: taskDate || (todo?.task_date || null)
-        })
-        setEditingId(null)
-      } else {
-        // Добавление новой задачи
-        // Если дата не указана, но выбрана дата в календаре, используем её
-        const finalDate = taskDate || (selectedDate ? formatDateForInput(selectedDate) : null)
-        addTodo(inputValue, selectedCategory, finalDate)
-      }
-      setInputValue('')
-      setSelectedCategory('none')
-      setTaskDate('')
-      setShowModal(false)
-    }
-  }
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
-      handleAddTodo()
-    }
-    if (e.key === 'Escape') {
-      setShowModal(false)
-      setInputValue('')
-      setSelectedCategory('none')
-      setTaskDate('')
-      setEditingId(null)
-    }
-  }
-
-  const handlePlusClick = () => {
-    setEditingId(null)
-    setInputValue('')
-    setSelectedCategory('none')
-    // Если выбрана дата в календаре, устанавливаем её в модальном окне
-    if (selectedDate) {
-      setTaskDate(formatDateForInput(selectedDate))
-    } else {
-      setTaskDate('')
-    }
-    setShowModal(true)
-  }
-
-  const handleCloseModal = () => {
-    setShowModal(false)
-    setInputValue('')
-    setSelectedCategory('none')
-    setTaskDate('')
-    setEditingId(null)
-  }
-
-  // Функция для форматирования даты в YYYY-MM-DD без сдвига часового пояса
+  // Форматирование даты в YYYY-MM-DD без сдвига часового пояса
   const formatDateForInput = (date) => {
     if (!date) return ''
     const d = new Date(date)
@@ -82,62 +24,177 @@ function App() {
     return `${year}-${month}-${day}`
   }
 
-  // Функция для получения даты из строки YYYY-MM-DD без сдвига часового пояса
-  const parseDateFromInput = (dateString) => {
-    if (!dateString) return null
-    const [year, month, day] = dateString.split('-').map(Number)
-    return new Date(year, month - 1, day)
+  // Получение строки даты для сравнения
+  const getDateString = (date) => {
+    if (!date) return null
+    const d = new Date(date)
+    return formatDateForInput(d)
+  }
+
+  const resetModal = () => {
+    setInputValue('')
+    setSelectedCategory('none')
+    setTaskDate('')
+    setEditingId(null)
+  }
+
+  const handleAddTodo = () => {
+    if (!inputValue.trim()) return
+
+    if (editingId) {
+      const todo = normalizedTodos.find(t => t.id === editingId)
+      updateTodo(editingId, {
+        text: inputValue.trim(),
+        category: selectedCategory,
+        task_date: taskDate || todo?.task_date || null
+      })
+    } else {
+      const finalDate = taskDate || (selectedDate ? formatDateForInput(selectedDate) : null)
+      addTodo(inputValue, selectedCategory, finalDate)
+    }
+    resetModal()
+    setShowModal(false)
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleAddTodo()
+    } else if (e.key === 'Escape') {
+      resetModal()
+      setShowModal(false)
+    }
+  }
+
+  const handlePlusClick = () => {
+    resetModal()
+    if (selectedDate) {
+      setTaskDate(formatDateForInput(selectedDate))
+    }
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    resetModal()
+    setShowModal(false)
   }
 
   const handleEditStart = (todo) => {
     setEditingId(todo.id)
     setInputValue(todo.text)
     setSelectedCategory(todo.category || 'none')
-    // Форматируем дату для input type="date" (YYYY-MM-DD)
-    if (todo.task_date) {
-      setTaskDate(formatDateForInput(todo.task_date))
-    } else {
-      setTaskDate('')
-    }
+    setTaskDate(todo.task_date ? formatDateForInput(todo.task_date) : '')
     setShowModal(true)
   }
 
-  // Нормализация данных для совместимости
+  const handleDateChange = (newDate) => {
+    setTaskDate(newDate)
+    if (newDate) {
+      const [year, month, day] = newDate.split('-').map(Number)
+      const date = new Date(year, month - 1, day)
+      setSelectedDate(date)
+      if (currentDate.getFullYear() !== year || currentDate.getMonth() !== month - 1) {
+        setCurrentDate(date)
+      }
+    } else if (!editingId) {
+      setSelectedDate(null)
+    }
+  }
+
+  // Нормализация данных
   const normalizedTodos = todos.map(todo => ({
     id: todo.id,
     text: todo.text || '',
     completed: todo.completed || false,
     created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
-    category: todo.category || 'none', // none, recent, old
+    category: todo.category || 'none',
     task_date: todo.task_date || null
-  })).filter(todo => todo.text) // Убираем задачи без текста
+  })).filter(todo => todo.text)
 
-  // Разделяем задачи по категории (только активные)
+  // Фильтрация задач
   const activeTodos = normalizedTodos.filter(todo => !todo.completed)
   const completedTodos = normalizedTodos.filter(todo => todo.completed)
-  
   const recentTodos = activeTodos.filter(todo => todo.category === 'recent')
   const oldTodos = activeTodos.filter(todo => todo.category === 'old')
-  const noneCategoryTodos = activeTodos.filter(todo => todo.category === 'none' || !todo.category)
 
   const recentCount = recentTodos.length
   const oldCount = oldTodos.length
   const completedCount = completedTodos.length
 
-  // Фильтрация задач по выбранной дате для календаря
+  // Фильтрация задач по дате для календаря
   const getTasksForDate = (date) => {
     if (!date) return []
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = formatDateForInput(date)
     return normalizedTodos.filter(todo => {
-      // Сначала проверяем task_date, если его нет - используем created_at
-      const todoDateStr = todo.task_date 
-        ? new Date(todo.task_date).toISOString().split('T')[0]
-        : (todo.created_at ? new Date(todo.created_at).toISOString().split('T')[0] : null)
+      const todoDateStr = getDateString(todo.task_date || todo.created_at)
       return todoDateStr === dateStr
     })
   }
 
   const selectedDateTasks = selectedDate ? getTasksForDate(selectedDate) : []
+
+  // Компонент задачи
+  const TodoItem = ({ todo, showCategory = true }) => (
+    <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+      <div className="todo-content">
+        <button
+          className={`checkbox ${todo.completed ? 'checked' : ''}`}
+          onClick={() => toggleTodo(todo.id)}
+        >
+          {todo.completed && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          )}
+        </button>
+        <span 
+          className="todo-text"
+          onDoubleClick={() => !todo.completed && handleEditStart(todo)}
+          title={todo.completed ? '' : 'Двойной клик для редактирования'}
+        >
+          {todo.text}
+        </span>
+        {showCategory && !todo.completed && (
+          <>
+            {todo.category === 'recent' && (
+              <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                <span>&lt;</span>
+                <span>15 мин</span>
+              </span>
+            )}
+            {todo.category === 'old' && (
+              <span className="category-tag category-tag-old" title="Более 15 минут">
+                <span>&gt;</span>
+                <span>15 мин</span>
+              </span>
+            )}
+          </>
+        )}
+        {!todo.completed && (
+          <button
+            className="edit-button"
+            onClick={() => handleEditStart(todo)}
+            aria-label="Редактировать задачу"
+            title="Редактировать"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+        )}
+      </div>
+      <button
+        className="delete-button"
+        onClick={() => deleteTodo(todo.id)}
+        aria-label="Удалить задачу"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    </div>
+  )
 
   return (
     <div className="app">
@@ -147,7 +204,6 @@ function App() {
           <p className="subtitle">Организуйте свою жизнь</p>
         </header>
 
-        {/* Вкладки */}
         <div className="tabs">
           <button
             className={`tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
@@ -163,452 +219,220 @@ function App() {
           </button>
         </div>
 
-        {/* Контент вкладки "Задачи" */}
         {activeTab === 'tasks' && (
           <div className="tab-content">
             {error && (
-          <div className="error-banner">
-            Ошибка: {error}. Используется локальное хранилище.
-          </div>
-        )}
-
-        {loading && todos.length === 0 && (
-          <div className="loading-state">
-            <p>Загрузка задач...</p>
-          </div>
-        )}
-
-        <div className="add-button-section">
-          <button className="add-button-large" onClick={handlePlusClick}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-
-        {showModal && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>{editingId ? 'Редактировать задачу' : 'Добавить задачу'}</h2>
-                <button className="modal-close" onClick={handleCloseModal}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
+              <div className="error-banner">
+                Ошибка: {error}. Используется локальное хранилище.
               </div>
-              <div className="modal-body">
-                <div className="modal-input-group">
-                  <label>Название задачи</label>
-                  <input
-                    type="text"
-                    className="modal-input"
-                    placeholder="Введите название задачи..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    autoFocus
-                  />
-                </div>
-                <div className="modal-date-group">
-                  <label>Дата задачи</label>
-                  <input
-                    type="date"
-                    className="modal-date-input"
-                    value={taskDate}
-                    onChange={(e) => {
-                      const newDate = e.target.value
-                      setTaskDate(newDate)
-                      // Синхронизируем с календарем: если дата выбрана, обновляем selectedDate и currentDate
-                      if (newDate) {
-                        const [year, month, day] = newDate.split('-').map(Number)
-                        const date = new Date(year, month - 1, day)
-                        setSelectedDate(date)
-                        // Если выбранная дата в другом месяце, переключаем календарь на этот месяц
-                        if (currentDate.getFullYear() !== year || currentDate.getMonth() !== month - 1) {
-                          setCurrentDate(date)
-                        }
-                      } else {
-                        // Если дата очищена, сбрасываем selectedDate только если мы не редактируем задачу
-                        if (!editingId) {
-                          setSelectedDate(null)
-                        }
-                      }
-                    }}
-                    onKeyDown={handleKeyPress}
-                  />
-                </div>
-                <div className="modal-category-group">
-                  <label>Категория</label>
-                  <div className="category-buttons">
-                    <button
-                      className={`category-btn ${selectedCategory === 'none' ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory('none')}
-                    >
-                      Без категории
+            )}
+
+            {loading && todos.length === 0 && (
+              <div className="loading-state">
+                <p>Загрузка задач...</p>
+              </div>
+            )}
+
+            <div className="add-button-section">
+              <button className="add-button-large" onClick={handlePlusClick}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+
+            {showModal && (
+              <div className="modal-overlay" onClick={handleCloseModal}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-header">
+                    <h2>{editingId ? 'Редактировать задачу' : 'Добавить задачу'}</h2>
+                    <button className="modal-close" onClick={handleCloseModal}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
                     </button>
-                    <button
-                      className={`category-btn ${selectedCategory === 'recent' ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory('recent')}
-                      title="Менее 15 минут"
-                    >
-                      <span>&lt;</span> 15 мин
+                  </div>
+                  <div className="modal-body">
+                    <div className="modal-input-group">
+                      <label>Название задачи</label>
+                      <input
+                        type="text"
+                        className="modal-input"
+                        placeholder="Введите название задачи..."
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        autoFocus
+                      />
+                    </div>
+                    <div className="modal-date-group">
+                      <label>Дата задачи</label>
+                      <input
+                        type="date"
+                        className="modal-date-input"
+                        value={taskDate}
+                        onChange={(e) => handleDateChange(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                      />
+                    </div>
+                    <div className="modal-category-group">
+                      <label>Категория</label>
+                      <div className="category-buttons">
+                        <button
+                          className={`category-btn ${selectedCategory === 'none' ? 'active' : ''}`}
+                          onClick={() => setSelectedCategory('none')}
+                        >
+                          Без категории
+                        </button>
+                        <button
+                          className={`category-btn ${selectedCategory === 'recent' ? 'active' : ''}`}
+                          onClick={() => setSelectedCategory('recent')}
+                          title="Менее 15 минут"
+                        >
+                          <span>&lt;</span> 15 мин
+                        </button>
+                        <button
+                          className={`category-btn ${selectedCategory === 'old' ? 'active' : ''}`}
+                          onClick={() => setSelectedCategory('old')}
+                          title="Более 15 минут"
+                        >
+                          <span>&gt;</span> 15 мин
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button className="modal-cancel-btn" onClick={handleCloseModal}>
+                      Отмена
                     </button>
-                    <button
-                      className={`category-btn ${selectedCategory === 'old' ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory('old')}
-                      title="Более 15 минут"
-                    >
-                      <span>&gt;</span> 15 мин
+                    <button className="modal-add-btn" onClick={handleAddTodo} disabled={!inputValue.trim()}>
+                      {editingId ? 'Сохранить' : 'Добавить'}
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button className="modal-cancel-btn" onClick={handleCloseModal}>
-                  Отмена
+            )}
+
+            {normalizedTodos.length > 0 && (
+              <div className="filters">
+                <button
+                  className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                  onClick={() => setFilter('all')}
+                >
+                  Все ({activeTodos.length})
                 </button>
-                <button className="modal-add-btn" onClick={handleAddTodo} disabled={!inputValue.trim()}>
-                  {editingId ? 'Сохранить' : 'Добавить'}
+                <button
+                  className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
+                  onClick={() => setFilter('recent')}
+                  title="Менее 15 минут"
+                >
+                  <span>&lt;</span>
+                  15 мин ({recentCount})
+                </button>
+                <button
+                  className={`filter-btn ${filter === 'old' ? 'active' : ''}`}
+                  onClick={() => setFilter('old')}
+                  title="Более 15 минут"
+                >
+                  <span>&gt;</span>
+                  15 мин ({oldCount})
                 </button>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {normalizedTodos.length > 0 && (
-          <div className="filters">
-            <button
-              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}
-            >
-              Все ({activeTodos.length})
-            </button>
-            <button
-              className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
-              onClick={() => setFilter('recent')}
-              title="Менее 15 минут"
-            >
-              <span>&lt;</span>
-              15 мин ({recentCount})
-            </button>
-            <button
-              className={`filter-btn ${filter === 'old' ? 'active' : ''}`}
-              onClick={() => setFilter('old')}
-              title="Более 15 минут"
-            >
-              <span>&gt;</span>
-              15 мин ({oldCount})
-            </button>
-          </div>
-        )}
-
-        {/* Все активные задачи в одном списке при выборе "Все" */}
-        {filter === 'all' && (
-          <>
-            {activeTodos.length > 0 ? (
-              <div className="todos-section">
-                <div className="todos-list">
-                  {activeTodos.map(todo => (
-                    <div key={todo.id} className="todo-item">
-                      <div className="todo-content">
-                        <button
-                          className="checkbox"
-                          onClick={() => toggleTodo(todo.id)}
-                        >
-                        </button>
-                        <span 
-                          className="todo-text"
-                          onDoubleClick={() => handleEditStart(todo)}
-                          title="Двойной клик для редактирования"
-                        >
-                          {todo.text}
-                        </span>
-                        {todo.category === 'recent' && (
-                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                            <span>&lt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        {todo.category === 'old' && (
-                          <span className="category-tag category-tag-old" title="Более 15 минут">
-                            <span>&gt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        <button
-                          className="edit-button"
-                          onClick={() => handleEditStart(todo)}
-                          aria-label="Редактировать задачу"
-                          title="Редактировать"
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                      <button
-                        className="delete-button"
-                        onClick={() => deleteTodo(todo.id)}
-                        aria-label="Удалить задачу"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
+            {filter === 'all' && (
+              <>
+                {activeTodos.length > 0 ? (
+                  <div className="todos-section">
+                    <div className="todos-list">
+                      {activeTodos.map(todo => <TodoItem key={todo.id} todo={todo} showCategory={true} />)}
                     </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              !loading && normalizedTodos.length === 0 && (
+                  </div>
+                ) : (
+                  !loading && normalizedTodos.length === 0 && (
+                    <div className="todos-section">
+                      <div className="todos-list">
+                        <div className="empty-state">
+                          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                          </svg>
+                          <p>Нет задач. Добавьте новую задачу!</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+
+                {completedCount > 0 && (
+                  <div className="todos-section completed-section">
+                    <div className="section-header">
+                      <h2>Выполненные задачи ({completedCount})</h2>
+                    </div>
+                    <div className="todos-list completed-list">
+                      {completedTodos.map(todo => <TodoItem key={todo.id} todo={todo} showCategory={false} />)}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {filter === 'recent' && (
+              recentCount > 0 ? (
                 <div className="todos-section">
+                  <div className="section-header">
+                    <h2>Менее 15 минут ({recentCount})</h2>
+                  </div>
+                  <div className="todos-list">
+                    {recentTodos.map(todo => <TodoItem key={todo.id} todo={todo} showCategory={true} />)}
+                  </div>
+                </div>
+              ) : (
+                activeTodos.length > 0 && (
                   <div className="todos-list">
                     <div className="empty-state">
                       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <path d="M9 11l3 3L22 4"></path>
                         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                       </svg>
-                      <p>Нет задач. Добавьте новую задачу!</p>
+                      <p>Нет активных задач менее 15 минут</p>
                     </div>
                   </div>
-                </div>
+                )
               )
             )}
 
-            {/* Блок выполненных задач при выборе "Все" - только если есть выполненные */}
-            {completedCount > 0 && (
-              <div className="todos-section completed-section">
-                <div className="section-header">
-                  <h2>Выполненные задачи ({completedCount})</h2>
+            {filter === 'old' && (
+              oldCount > 0 ? (
+                <div className="todos-section">
+                  <div className="section-header">
+                    <h2>Более 15 минут ({oldCount})</h2>
+                  </div>
+                  <div className="todos-list">
+                    {oldTodos.map(todo => <TodoItem key={todo.id} todo={todo} showCategory={true} />)}
+                  </div>
                 </div>
-                <div className="todos-list completed-list">
-                  {completedTodos.map(todo => (
-                    <div key={todo.id} className="todo-item completed">
-                      <div className="todo-content">
-                        <button
-                          className="checkbox checked"
-                          onClick={() => toggleTodo(todo.id)}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-                        </button>
-                        <span className="todo-text">{todo.text}</span>
-                      </div>
-                      <button
-                        className="delete-button"
-                        onClick={() => deleteTodo(todo.id)}
-                        aria-label="Удалить задачу"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
+              ) : (
+                activeTodos.length > 0 && (
+                  <div className="todos-list">
+                    <div className="empty-state">
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                      </svg>
+                      <p>Нет активных задач более 15 минут</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-
-        {/* Блок задач менее 15 минут */}
-        {filter === 'recent' && recentCount > 0 && (
-          <div className="todos-section">
-            <div className="section-header">
-              <h2>Менее 15 минут ({recentCount})</h2>
-            </div>
-            <div className="todos-list">
-              {recentTodos.map(todo => (
-                <div key={todo.id} className="todo-item">
-                  <div className="todo-content">
-                    <button
-                      className="checkbox"
-                      onClick={() => toggleTodo(todo.id)}
-                    >
-                    </button>
-                    {editingId === todo.id ? (
-                      <input
-                        type="text"
-                        className="edit-input"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={() => handleEditSave(todo.id)}
-                        onKeyDown={(e) => handleEditKeyPress(e, todo.id)}
-                        autoFocus
-                      />
-                    ) : (
-                      <>
-                        <span 
-                          className="todo-text"
-                          onDoubleClick={() => handleEditStart(todo)}
-                          title="Двойной клик для редактирования"
-                        >
-                          {todo.text}
-                        </span>
-                        {todo.category === 'recent' && (
-                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                            <span>&lt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        {todo.category === 'old' && (
-                          <span className="category-tag category-tag-old" title="Более 15 минут">
-                            <span>&gt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        <button
-                          className="edit-button"
-                          onClick={() => handleEditStart(todo)}
-                          aria-label="Редактировать задачу"
-                          title="Редактировать"
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
-                        </button>
-                      </>
-                    )}
                   </div>
-                  {editingId !== todo.id && (
-                    <button
-                      className="delete-button"
-                      onClick={() => deleteTodo(todo.id)}
-                      aria-label="Удалить задачу"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Блок задач более 15 минут */}
-        {filter === 'old' && oldCount > 0 && (
-          <div className="todos-section">
-            <div className="section-header">
-              <h2>Более 15 минут ({oldCount})</h2>
-            </div>
-            <div className="todos-list">
-              {oldTodos.map(todo => (
-                <div key={todo.id} className="todo-item">
-                  <div className="todo-content">
-                    <button
-                      className="checkbox"
-                      onClick={() => toggleTodo(todo.id)}
-                    >
-                    </button>
-                    {editingId === todo.id ? (
-                      <input
-                        type="text"
-                        className="edit-input"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={() => handleEditSave(todo.id)}
-                        onKeyDown={(e) => handleEditKeyPress(e, todo.id)}
-                        autoFocus
-                      />
-                    ) : (
-                      <>
-                        <span 
-                          className="todo-text"
-                          onDoubleClick={() => handleEditStart(todo)}
-                          title="Двойной клик для редактирования"
-                        >
-                          {todo.text}
-                        </span>
-                        {todo.category === 'recent' && (
-                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                            <span>&lt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        {todo.category === 'old' && (
-                          <span className="category-tag category-tag-old" title="Более 15 минут">
-                            <span>&gt;</span>
-                            <span>15 мин</span>
-                          </span>
-                        )}
-                        <button
-                          className="edit-button"
-                          onClick={() => handleEditStart(todo)}
-                          aria-label="Редактировать задачу"
-                          title="Редактировать"
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  {editingId !== todo.id && (
-                    <button
-                      className="delete-button"
-                      onClick={() => deleteTodo(todo.id)}
-                      aria-label="Удалить задачу"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Пустое состояние при выборе конкретного фильтра */}
-        {filter !== 'all' && normalizedTodos.length > 0 && (
-          <>
-            {filter === 'recent' && recentCount === 0 && activeTodos.length > 0 && (
-              <div className="todos-list">
-                <div className="empty-state">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9 11l3 3L22 4"></path>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                  </svg>
-                  <p>Нет активных задач менее 15 минут</p>
-                </div>
-              </div>
+                )
+              )
             )}
-            {filter === 'old' && oldCount === 0 && activeTodos.length > 0 && (
-              <div className="todos-list">
-                <div className="empty-state">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9 11l3 3L22 4"></path>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                  </svg>
-                  <p>Нет активных задач более 15 минут</p>
-                </div>
-              </div>
-            )}
-          </>
-        )}
           </div>
         )}
 
-        {/* Контент вкладки "Календарь" */}
         {activeTab === 'calendar' && (
           <div className="tab-content">
-            {/* Кнопка добавления задачи в календаре */}
             <div className="add-button-section">
               <button className="add-button-large" onClick={handlePlusClick}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -667,22 +491,19 @@ function App() {
                   const firstDay = new Date(year, month, 1)
                   const lastDay = new Date(year, month + 1, 0)
                   const daysInMonth = lastDay.getDate()
-                  const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1 // Понедельник = 0
+                  const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1
                   
                   const days = []
                   
-                  // Пустые ячейки до первого дня месяца
                   for (let i = 0; i < startingDayOfWeek; i++) {
                     days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>)
                   }
                   
-                  // Дни месяца
                   for (let day = 1; day <= daysInMonth; day++) {
                     const date = new Date(year, month, day)
-                    const dayOfWeek = date.getDay() === 0 ? 6 : date.getDay() - 1 // Понедельник = 0
-                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 // Суббота или воскресенье
+                    const dayOfWeek = date.getDay() === 0 ? 6 : date.getDay() - 1
+                    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6
                     const isToday = date.toDateString() === new Date().toDateString()
-                    
                     const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
                     const dayTasks = getTasksForDate(date)
                     const hasTasks = dayTasks.length > 0
@@ -693,7 +514,6 @@ function App() {
                         className={`calendar-day ${isWeekend ? 'weekend' : 'workday'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasTasks ? 'has-tasks' : ''}`}
                         onClick={() => {
                           setSelectedDate(date)
-                          // Если открыто модальное окно для добавления задачи, обновляем дату
                           if (showModal && !editingId) {
                             setTaskDate(formatDateForInput(date))
                           }
@@ -711,7 +531,6 @@ function App() {
                 })()}
               </div>
 
-              {/* Список задач на выбранную дату */}
               {selectedDate && (
                 <div className="calendar-tasks">
                   <div className="calendar-tasks-header">
@@ -726,27 +545,7 @@ function App() {
                       <button 
                         className="calendar-add-task-btn"
                         onClick={() => {
-                          setEditingId(null)
-                          setInputValue('')
-                          setSelectedCategory('none')
-                          setTaskDate(formatDateForInput(selectedDate))
-                          setShowModal(true)
-                        }}
-                        aria-label="Добавить задачу на эту дату"
-                        title="Добавить задачу на эту дату"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="5" x2="12" y2="19"></line>
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                      </button>
-                    <div className="calendar-tasks-header-actions">
-                      <button 
-                        className="calendar-add-task-btn"
-                        onClick={() => {
-                          setEditingId(null)
-                          setInputValue('')
-                          setSelectedCategory('none')
+                          resetModal()
                           setTaskDate(formatDateForInput(selectedDate))
                           setShowModal(true)
                         }}
@@ -769,7 +568,6 @@ function App() {
                         </svg>
                       </button>
                     </div>
-                  </div>
                   </div>
                   {selectedDateTasks.length > 0 ? (
                     <div className="calendar-tasks-list">
@@ -830,4 +628,3 @@ function App() {
 }
 
 export default App
-
