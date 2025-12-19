@@ -146,14 +146,16 @@ function App() {
                     <button
                       className={`category-btn ${selectedCategory === 'recent' ? 'active' : ''}`}
                       onClick={() => setSelectedCategory('recent')}
+                      title="Менее 15 минут"
                     >
-                      Менее 15 минут
+                      <span>&lt;</span> 15 мин
                     </button>
                     <button
                       className={`category-btn ${selectedCategory === 'old' ? 'active' : ''}`}
                       onClick={() => setSelectedCategory('old')}
+                      title="Более 15 минут"
                     >
-                      Более 15 минут
+                      <span>&gt;</span> 15 мин
                     </button>
                   </div>
                 </div>
