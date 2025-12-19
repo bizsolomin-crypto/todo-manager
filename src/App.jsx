@@ -113,7 +113,7 @@ function App() {
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
-                <h2>Добавить задачу</h2>
+                <h2>{editingId ? 'Редактировать задачу' : 'Добавить задачу'}</h2>
                 <button className="modal-close" onClick={handleCloseModal}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -163,7 +163,7 @@ function App() {
                   Отмена
                 </button>
                 <button className="modal-add-btn" onClick={handleAddTodo} disabled={!inputValue.trim()}>
-                  Добавить
+                  {editingId ? 'Сохранить' : 'Добавить'}
                 </button>
               </div>
             </div>
