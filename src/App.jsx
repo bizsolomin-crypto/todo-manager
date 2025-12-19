@@ -6,7 +6,7 @@ function App() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted, updateTodo } = useTodos()
   const [inputValue, setInputValue] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('none') // none, recent, old
-  const [selectedDate, setSelectedDate] = useState('') // Дата задачи
+  const [taskDate, setTaskDate] = useState('') // Дата задачи в модальном окне
   const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
   const [editingId, setEditingId] = useState(null)
@@ -41,7 +41,7 @@ function App() {
       setShowModal(false)
       setInputValue('')
       setSelectedCategory('none')
-      setSelectedDate('')
+      setTaskDate('')
       setEditingId(null)
     }
   }
@@ -54,7 +54,7 @@ function App() {
     setShowModal(false)
     setInputValue('')
     setSelectedCategory('none')
-    setSelectedDate('')
+    setTaskDate('')
     setEditingId(null)
   }
 
@@ -65,9 +65,9 @@ function App() {
     // Форматируем дату для input type="date" (YYYY-MM-DD)
     if (todo.task_date) {
       const date = new Date(todo.task_date)
-      setSelectedDate(date.toISOString().split('T')[0])
+      setTaskDate(date.toISOString().split('T')[0])
     } else {
-      setSelectedDate('')
+      setTaskDate('')
     }
     setShowModal(true)
   }
@@ -187,8 +187,8 @@ function App() {
                   <input
                     type="date"
                     className="modal-date-input"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    value={taskDate}
+                    onChange={(e) => setTaskDate(e.target.value)}
                     onKeyDown={handleKeyPress}
                   />
                 </div>
