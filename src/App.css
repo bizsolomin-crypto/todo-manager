@@ -906,6 +906,8 @@
 .modal-reward-input {
   text-align: center;
   padding: 14px 12px;
+  height: 48px;
+  box-sizing: border-box;
 }
 
 .modal-date-input {
@@ -918,6 +920,8 @@
   background: var(--surface);
   color: var(--text-primary);
   font-family: inherit;
+  height: 48px;
+  box-sizing: border-box;
 }
 
 .modal-date-input:focus {
@@ -1079,6 +1083,15 @@
   .modal-reward-input {
     padding: 12px 8px;
     font-size: 0.95rem;
+    height: 48px;
+  }
+
+  .modal-date-input {
+    height: 48px;
+  }
+
+  .modal-input {
+    height: 48px;
   }
 }
 
