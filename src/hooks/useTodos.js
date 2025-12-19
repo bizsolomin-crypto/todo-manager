@@ -75,9 +75,13 @@ export function useTodos() {
             throw supabaseError
           }
           
-          // Добавляем category по умолчанию, если её нет
+          // Добавляем category по умолчанию, если её нет, и нормализуем данные
           const todosWithCategory = (data || []).map(todo => ({
-            ...todo,
+            id: todo.id,
+            text: todo.text || '',
+            completed: todo.completed || false,
+            created_at: todo.created_at || todo.createdAt || new Date().toISOString(),
+            updated_at: todo.updated_at || todo.updatedAt,
             category: todo.category || 'none'
           }))
           
@@ -255,11 +259,11 @@ export function useTodos() {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
 
-    // Сохраняем все существующие поля, если они не переданы в updates
+    // Сохраняем все существующие поля, включая category
     const updatedTodo = { 
       ...todo, 
       ...updates,
-      // Убеждаемся, что категория сохраняется
+      // Убеждаемся, что категория всегда сохраняется
       category: updates.category !== undefined ? updates.category : (todo.category || 'none')
     }
 
@@ -272,10 +276,10 @@ export function useTodos() {
           setTimeout(() => reject(new Error('Request timeout')), 5000)
         )
 
-        // Подготавливаем данные для обновления, включая category если нужно
-        const updateData = { ...updates }
-        if (updates.category === undefined && todo.category) {
-          updateData.category = todo.category
+        // Подготавливаем данные для обновления - всегда включаем category
+        const updateData = { 
+          ...updates,
+          category: updates.category !== undefined ? updates.category : (todo.category || 'none')
         }
 
         const updatePromise = supabase
@@ -297,7 +301,7 @@ export function useTodos() {
       setError(err.message)
       // Откатываем оптимистичное обновление
       setTodos(todos)
-      // Fallback на localStorage
+      // Fallback на localStorage - сохраняем с категорией
       const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
       setTodos(updatedTodos)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
