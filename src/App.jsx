@@ -196,6 +196,22 @@ function App() {
                         >
                         </button>
                         <span className="todo-text">{todo.text}</span>
+                        {todo.category === 'recent' && (
+                          <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span>15 мин</span>
+                          </span>
+                        )}
+                        {todo.category === 'old' && (
+                          <span className="category-tag category-tag-old" title="Более 15 минут">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            <span>15 мин</span>
+                          </span>
+                        )}
                       </div>
                       <button
                         className="delete-button"
