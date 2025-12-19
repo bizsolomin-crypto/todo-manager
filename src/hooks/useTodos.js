@@ -255,7 +255,13 @@ export function useTodos() {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
 
-    const updatedTodo = { ...todo, ...updates }
+    // Сохраняем все существующие поля, если они не переданы в updates
+    const updatedTodo = { 
+      ...todo, 
+      ...updates,
+      // Убеждаемся, что категория сохраняется
+      category: updates.category !== undefined ? updates.category : (todo.category || 'none')
+    }
 
     // Оптимистичное обновление
     setTodos(todos.map(t => t.id === id ? updatedTodo : t))
@@ -266,9 +272,15 @@ export function useTodos() {
           setTimeout(() => reject(new Error('Request timeout')), 5000)
         )
 
+        // Подготавливаем данные для обновления, включая category если нужно
+        const updateData = { ...updates }
+        if (updates.category === undefined && todo.category) {
+          updateData.category = todo.category
+        }
+
         const updatePromise = supabase
           .from('todos')
-          .update(updates)
+          .update(updateData)
           .eq('id', id)
 
         await Promise.race([updatePromise, timeoutPromise])

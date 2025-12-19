@@ -48,7 +48,16 @@ function App() {
 
   const handleEditSave = (id) => {
     if (editValue.trim()) {
-      updateTodo(id, { text: editValue.trim() })
+      const todo = normalizedTodos.find(t => t.id === id)
+      if (todo) {
+        // Сохраняем категорию при обновлении текста
+        updateTodo(id, { 
+          text: editValue.trim(),
+          category: todo.category || 'none'
+        })
+      } else {
+        updateTodo(id, { text: editValue.trim() })
+      }
     }
     setEditingId(null)
     setEditValue('')
