@@ -50,6 +50,15 @@ function App() {
   }
 
   const handlePlusClick = () => {
+    setEditingId(null)
+    setInputValue('')
+    setSelectedCategory('none')
+    // Если выбрана дата в календаре, устанавливаем её в модальном окне
+    if (selectedDate) {
+      setTaskDate(selectedDate.toISOString().split('T')[0])
+    } else {
+      setTaskDate('')
+    }
     setShowModal(true)
   }
 
