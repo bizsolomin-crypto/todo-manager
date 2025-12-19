@@ -28,7 +28,7 @@ function App() {
       } else {
         // Добавление новой задачи
         // Если дата не указана, но выбрана дата в календаре, используем её
-        const finalDate = taskDate || (selectedDate ? selectedDate.toISOString().split('T')[0] : null)
+        const finalDate = taskDate || (selectedDate ? formatDateForInput(selectedDate) : null)
         addTodo(inputValue, selectedCategory, finalDate)
       }
       setInputValue('')
@@ -57,7 +57,7 @@ function App() {
     setSelectedCategory('none')
     // Если выбрана дата в календаре, устанавливаем её в модальном окне
     if (selectedDate) {
-      setTaskDate(selectedDate.toISOString().split('T')[0])
+      setTaskDate(formatDateForInput(selectedDate))
     } else {
       setTaskDate('')
     }
@@ -72,14 +72,30 @@ function App() {
     setEditingId(null)
   }
 
+  // Функция для форматирования даты в YYYY-MM-DD без сдвига часового пояса
+  const formatDateForInput = (date) => {
+    if (!date) return ''
+    const d = new Date(date)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  // Функция для получения даты из строки YYYY-MM-DD без сдвига часового пояса
+  const parseDateFromInput = (dateString) => {
+    if (!dateString) return null
+    const [year, month, day] = dateString.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
   const handleEditStart = (todo) => {
     setEditingId(todo.id)
     setInputValue(todo.text)
     setSelectedCategory(todo.category || 'none')
     // Форматируем дату для input type="date" (YYYY-MM-DD)
     if (todo.task_date) {
-      const date = new Date(todo.task_date)
-      setTaskDate(date.toISOString().split('T')[0])
+      setTaskDate(formatDateForInput(todo.task_date))
     } else {
       setTaskDate('')
     }
@@ -661,7 +677,7 @@ function App() {
                           setSelectedDate(date)
                           // Если открыто модальное окно для добавления задачи, обновляем дату
                           if (showModal && !editingId) {
-                            setTaskDate(date.toISOString().split('T')[0])
+                            setTaskDate(formatDateForInput(date))
                           }
                         }}
                       >
@@ -695,7 +711,7 @@ function App() {
                           setEditingId(null)
                           setInputValue('')
                           setSelectedCategory('none')
-                          setTaskDate(selectedDate.toISOString().split('T')[0])
+                          setTaskDate(formatDateForInput(selectedDate))
                           setShowModal(true)
                         }}
                         aria-label="Добавить задачу на эту дату"
@@ -713,7 +729,7 @@ function App() {
                           setEditingId(null)
                           setInputValue('')
                           setSelectedCategory('none')
-                          setTaskDate(selectedDate.toISOString().split('T')[0])
+                          setTaskDate(formatDateForInput(selectedDate))
                           setShowModal(true)
                         }}
                         aria-label="Добавить задачу на эту дату"
