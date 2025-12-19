@@ -27,7 +27,9 @@ function App() {
         setEditingId(null)
       } else {
         // Добавление новой задачи
-        addTodo(inputValue, selectedCategory, taskDate)
+        // Если дата не указана, но выбрана дата в календаре, используем её
+        const finalDate = taskDate || (selectedDate ? selectedDate.toISOString().split('T')[0] : null)
+        addTodo(inputValue, selectedCategory, finalDate)
       }
       setInputValue('')
       setSelectedCategory('none')
