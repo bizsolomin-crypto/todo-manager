@@ -9,6 +9,7 @@ function App() {
   const [showModal, setShowModal] = useState(false)
   const [filter, setFilter] = useState('all') // all, recent, old
   const [editingId, setEditingId] = useState(null)
+  const [activeTab, setActiveTab] = useState('tasks') // tasks, calendar
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
