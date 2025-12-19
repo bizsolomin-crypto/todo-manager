@@ -272,26 +272,28 @@ function App() {
                         autoFocus
                       />
                     </div>
-                    <div className="modal-date-group">
-                      <label>Дата задачи</label>
-                      <input
-                        type="date"
-                        className="modal-date-input"
-                        value={taskDate}
-                        onChange={(e) => handleDateChange(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                      />
-                    </div>
-                    <div className="modal-reward-group">
-                      <label>Награда</label>
-                      <input
-                        type="text"
-                        className="modal-input"
-                        placeholder="Введите награду за выполнение задачи..."
-                        value={reward}
-                        onChange={(e) => setReward(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                      />
+                    <div className="modal-row-group">
+                      <div className="modal-date-group">
+                        <label>Дата задачи</label>
+                        <input
+                          type="date"
+                          className="modal-date-input"
+                          value={taskDate}
+                          onChange={(e) => handleDateChange(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                        />
+                      </div>
+                      <div className="modal-reward-group">
+                        <label>Награда</label>
+                        <input
+                          type="text"
+                          className="modal-input"
+                          placeholder="Введите награду..."
+                          value={reward}
+                          onChange={(e) => setReward(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                        />
+                      </div>
                     </div>
                     <div className="modal-category-group">
                       <label>Категория</label>
