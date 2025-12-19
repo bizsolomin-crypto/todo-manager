@@ -65,8 +65,13 @@ export function useTodos() {
     const newTodo = {
       text: text.trim(),
       completed: false,
-      created_at: new Date().toISOString(),
-      category: category || 'none'
+      created_at: new Date().toISOString()
+    }
+    
+    // Добавляем category только если колонка существует
+    // Если нет - будет использоваться fallback на localStorage
+    if (category && category !== 'none') {
+      newTodo.category = category
     }
 
     // Оптимистичное обновление
