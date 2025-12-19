@@ -294,6 +294,45 @@ function App() {
           </div>
         )}
 
+        {/* Пустое состояние при выборе конкретного фильтра */}
+        {filter !== 'all' && normalizedTodos.length > 0 && (
+          <>
+            {filter === 'none' && noneCategoryTodos.length === 0 && (
+              <div className="todos-list">
+                <div className="empty-state">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                  <p>Нет задач без категории</p>
+                </div>
+              </div>
+            )}
+            {filter === 'recent' && recentCount === 0 && (
+              <div className="todos-list">
+                <div className="empty-state">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                  <p>Нет задач менее 15 минут</p>
+                </div>
+              </div>
+            )}
+            {filter === 'old' && oldCount === 0 && (
+              <div className="todos-list">
+                <div className="empty-state">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                  <p>Нет задач более 15 минут</p>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         {/* Пустое состояние когда нет задач вообще */}
         {normalizedTodos.length === 0 && !loading && (
           <div className="todos-list">
