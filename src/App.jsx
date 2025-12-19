@@ -218,7 +218,25 @@ function App() {
                     type="date"
                     className="modal-date-input"
                     value={taskDate}
-                    onChange={(e) => setTaskDate(e.target.value)}
+                    onChange={(e) => {
+                      const newDate = e.target.value
+                      setTaskDate(newDate)
+                      // Синхронизируем с календарем: если дата выбрана, обновляем selectedDate и currentDate
+                      if (newDate) {
+                        const [year, month, day] = newDate.split('-').map(Number)
+                        const date = new Date(year, month - 1, day)
+                        setSelectedDate(date)
+                        // Если выбранная дата в другом месяце, переключаем календарь на этот месяц
+                        if (currentDate.getFullYear() !== year || currentDate.getMonth() !== month - 1) {
+                          setCurrentDate(date)
+                        }
+                      } else {
+                        // Если дата очищена, сбрасываем selectedDate только если мы не редактируем задачу
+                        if (!editingId) {
+                          setSelectedDate(null)
+                        }
+                      }
+                    }}
                     onKeyDown={handleKeyPress}
                   />
                 </div>
