@@ -251,6 +251,47 @@ export function useTodos() {
     }
   }
 
+  const updateTodo = async (id, updates) => {
+    const todo = todos.find(t => t.id === id)
+    if (!todo) return
+
+    const updatedTodo = { ...todo, ...updates }
+
+    // Оптимистичное обновление
+    setTodos(todos.map(t => t.id === id ? updatedTodo : t))
+
+    try {
+      if (supabase) {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Request timeout')), 5000)
+        )
+
+        const updatePromise = supabase
+          .from('todos')
+          .update(updates)
+          .eq('id', id)
+
+        await Promise.race([updatePromise, timeoutPromise])
+
+        // Перезагружаем для синхронизации
+        await loadTodos()
+      } else {
+        const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
+        setTodos(updatedTodos)
+        localStorage.setItem('todos', JSON.stringify(updatedTodos))
+      }
+    } catch (err) {
+      console.error('Error updating todo:', err)
+      setError(err.message)
+      // Откатываем оптимистичное обновление
+      setTodos(todos)
+      // Fallback на localStorage
+      const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
+      setTodos(updatedTodos)
+      localStorage.setItem('todos', JSON.stringify(updatedTodos))
+    }
+  }
+
   return {
     todos,
     loading,
@@ -259,6 +300,7 @@ export function useTodos() {
     toggleTodo,
     deleteTodo,
     clearCompleted,
+    updateTodo,
     refresh: loadTodos
   }
 }

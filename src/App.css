@@ -366,6 +366,49 @@
   flex: 1;
 }
 
+.edit-button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  margin-left: 4px;
+}
+
+.todo-item:hover .edit-button {
+  opacity: 1;
+}
+
+.edit-button:hover {
+  background: var(--background);
+  color: var(--primary);
+}
+
+.edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  outline: none;
+  min-width: 0;
+}
+
+.edit-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .delete-button {
   width: 36px;
   height: 36px;
