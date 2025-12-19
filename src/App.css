@@ -1125,18 +1125,18 @@
   .clear-button:active,
   .checkbox:active,
   .delete-button:active,
+  .category-btn:active,
+  .modal-add-btn:active,
+  .modal-cancel-btn:active {
+    transform: scale(0.95);
+  }
+
   .category-btn {
     padding: 10px 6px;
     font-size: 0.7rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .category-btn:active,
-  .modal-add-btn:active,
-  .modal-cancel-btn:active {
-    transform: scale(0.95);
   }
 
   .todo-item:active {
