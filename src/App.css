@@ -1071,11 +1071,13 @@
   .modal-date-group {
     flex: 1;
     min-width: 0;
+    max-width: 160px;
   }
 
   .modal-reward-group {
-    min-width: 80px;
-    max-width: 90px;
+    flex: 1;
+    min-width: 0;
+    max-width: 100px;
   }
 
   .modal-reward-input {
