@@ -5,7 +5,7 @@ import './App.css'
 function App() {
   const { todos, loading, error, addTodo, toggleTodo, deleteTodo, clearCompleted } = useTodos()
   const [inputValue, setInputValue] = useState('')
-  const [filter, setFilter] = useState('all') // all, active, completed
+  const [filter, setFilter] = useState('all') // all, recent, old
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
@@ -24,15 +24,28 @@ function App() {
   const normalizedTodos = todos.map(todo => ({
     id: todo.id,
     text: todo.text || '',
-    completed: todo.completed || false
+    completed: todo.completed || false,
+    created_at: todo.created_at || todo.createdAt || new Date().toISOString()
   })).filter(todo => todo.text) // Убираем задачи без текста
 
-  // Разделяем задачи на активные и выполненные
+  // Функция для проверки времени создания задачи
+  const getTaskAge = (createdAt) => {
+    const now = new Date()
+    const created = new Date(createdAt)
+    const diffMinutes = (now - created) / (1000 * 60)
+    return diffMinutes
+  }
+
+  // Разделяем задачи по времени создания
+  const recentTodos = normalizedTodos.filter(todo => getTaskAge(todo.created_at) < 15)
+  const oldTodos = normalizedTodos.filter(todo => getTaskAge(todo.created_at) >= 15)
+
+  // Также разделяем по статусу для отображения
   const activeTodos = normalizedTodos.filter(todo => !todo.completed)
   const completedTodos = normalizedTodos.filter(todo => todo.completed)
 
-  const activeCount = activeTodos.length
-  const completedCount = completedTodos.length
+  const recentCount = recentTodos.length
+  const oldCount = oldTodos.length
 
   return (
     <div className="app">
@@ -82,45 +95,50 @@ function App() {
               Все ({normalizedTodos.length})
             </button>
             <button
-              className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
-              onClick={() => setFilter('active')}
+              className={`filter-btn ${filter === 'recent' ? 'active' : ''}`}
+              onClick={() => setFilter('recent')}
             >
-              Активные ({activeCount})
+              Менее 15 минут ({recentCount})
             </button>
             <button
-              className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
-              onClick={() => setFilter('completed')}
+              className={`filter-btn ${filter === 'old' ? 'active' : ''}`}
+              onClick={() => setFilter('old')}
             >
-              Выполненные ({completedCount})
+              Более 15 минут ({oldCount})
             </button>
           </div>
         )}
 
-        {/* Блок активных задач */}
-        {(filter === 'all' || filter === 'active') && (
+        {/* Блок задач менее 15 минут */}
+        {(filter === 'all' || filter === 'recent') && (
           <div className="todos-section">
-            {activeCount > 0 && (
+            {recentCount > 0 && (
               <div className="section-header">
-                <h2>Активные задачи ({activeCount})</h2>
+                <h2>Менее 15 минут ({recentCount})</h2>
               </div>
             )}
             <div className="todos-list">
-              {activeTodos.length === 0 && (filter === 'all' || filter === 'active') ? (
+              {recentTodos.length === 0 && (filter === 'all' || filter === 'recent') ? (
                 <div className="empty-state">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M9 11l3 3L22 4"></path>
                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                   </svg>
-                  <p>Нет активных задач</p>
+                  <p>Нет задач менее 15 минут</p>
                 </div>
               ) : (
-                activeTodos.map(todo => (
-                  <div key={todo.id} className="todo-item">
+                recentTodos.map(todo => (
+                  <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
                     <div className="todo-content">
                       <button
-                        className="checkbox"
+                        className={`checkbox ${todo.completed ? 'checked' : ''}`}
                         onClick={() => toggleTodo(todo.id)}
                       >
+                        {todo.completed && (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        )}
                       </button>
                       <span className="todo-text">{todo.text}</span>
                     </div>
@@ -141,23 +159,25 @@ function App() {
           </div>
         )}
 
-        {/* Блок выполненных задач */}
-        {(filter === 'all' || filter === 'completed') && completedCount > 0 && (
+        {/* Блок задач более 15 минут */}
+        {(filter === 'all' || filter === 'old') && oldCount > 0 && (
           <div className="todos-section completed-section">
             <div className="section-header">
-              <h2>Выполненные задачи ({completedCount})</h2>
+              <h2>Более 15 минут ({oldCount})</h2>
             </div>
             <div className="todos-list completed-list">
-              {completedTodos.map(todo => (
-                <div key={todo.id} className="todo-item completed">
+              {oldTodos.map(todo => (
+                <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
                   <div className="todo-content">
                     <button
-                      className="checkbox checked"
+                      className={`checkbox ${todo.completed ? 'checked' : ''}`}
                       onClick={() => toggleTodo(todo.id)}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
+                      {todo.completed && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
                     </button>
                     <span className="todo-text">{todo.text}</span>
                   </div>
