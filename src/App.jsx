@@ -151,34 +151,40 @@ function App() {
             </svg>
           )}
         </button>
-        <span 
-          className="todo-text"
-          onDoubleClick={() => !todo.completed && handleEditStart(todo)}
-          title={todo.completed ? '' : 'Двойной клик для редактирования'}
-        >
-          {todo.text}
-        </span>
-        {showCategory && !todo.completed && (
-          <>
-            {todo.category === 'recent' && (
-              <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                <span>&lt;</span>
-                <span>15 мин</span>
-              </span>
-            )}
-            {todo.category === 'old' && (
-              <span className="category-tag category-tag-old" title="Более 15 минут">
-                <span>&gt;</span>
-                <span>15 мин</span>
-              </span>
-            )}
-          </>
-        )}
-        {todo.reward && !todo.completed && (
-          <span className="reward-tag" title={`Награда: ${todo.reward}`}>
-            🏆 {todo.reward}
+        <div className="todo-text-wrapper">
+          <span 
+            className="todo-text"
+            onDoubleClick={() => !todo.completed && handleEditStart(todo)}
+            title={todo.completed ? '' : 'Двойной клик для редактирования'}
+          >
+            {todo.text}
           </span>
-        )}
+          {!todo.completed && (showCategory || todo.reward) && (
+            <div className="todo-tags">
+              {showCategory && (
+                <>
+                  {todo.category === 'recent' && (
+                    <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                      <span>&lt;</span>
+                      <span>15 мин</span>
+                    </span>
+                  )}
+                  {todo.category === 'old' && (
+                    <span className="category-tag category-tag-old" title="Более 15 минут">
+                      <span>&gt;</span>
+                      <span>15 мин</span>
+                    </span>
+                  )}
+                </>
+              )}
+              {todo.reward && (
+                <span className="reward-tag" title={`Награда: ${todo.reward}`}>
+                  🏆 {todo.reward}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
         {!todo.completed && (
           <button
             className="edit-button"
@@ -616,24 +622,30 @@ function App() {
                                 </svg>
                               )}
                             </button>
-                            <span className="calendar-task-text">{todo.text}</span>
-                            {todo.category === 'recent' && (
-                              <span className="category-tag category-tag-recent" title="Менее 15 минут">
-                                <span>&lt;</span>
-                                <span>15 мин</span>
-                              </span>
-                            )}
-                            {todo.category === 'old' && (
-                              <span className="category-tag category-tag-old" title="Более 15 минут">
-                                <span>&gt;</span>
-                                <span>15 мин</span>
-                              </span>
-                            )}
-                            {todo.reward && (
-                              <span className="reward-tag" title={`Награда: ${todo.reward}`}>
-                                🏆 {todo.reward}
-                              </span>
-                            )}
+                            <div className="calendar-task-text-wrapper">
+                              <span className="calendar-task-text">{todo.text}</span>
+                              {!todo.completed && (todo.category === 'recent' || todo.category === 'old' || todo.reward) && (
+                                <div className="todo-tags">
+                                  {todo.category === 'recent' && (
+                                    <span className="category-tag category-tag-recent" title="Менее 15 минут">
+                                      <span>&lt;</span>
+                                      <span>15 мин</span>
+                                    </span>
+                                  )}
+                                  {todo.category === 'old' && (
+                                    <span className="category-tag category-tag-old" title="Более 15 минут">
+                                      <span>&gt;</span>
+                                      <span>15 мин</span>
+                                    </span>
+                                  )}
+                                  {todo.reward && (
+                                    <span className="reward-tag" title={`Награда: ${todo.reward}`}>
+                                      🏆 {todo.reward}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <button
                             className="delete-button"

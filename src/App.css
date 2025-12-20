@@ -334,17 +334,28 @@
 
 .calendar-task-content {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   flex: 1;
   min-width: 0;
+}
+
+.calendar-task-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 8px;
 }
 
 .calendar-task-text {
   font-size: 0.95rem;
   color: var(--text-primary);
   word-break: break-word;
-  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.5;
 }
 
 .calendar-task-item.completed .calendar-task-text {
@@ -613,11 +624,26 @@
 
 .todo-content {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   flex: 1;
   min-width: 0;
   overflow: hidden;
+}
+
+.todo-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 8px;
+}
+
+.todo-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .category-tag {
@@ -693,10 +719,10 @@
   font-size: 1rem;
   color: var(--text-primary);
   word-break: break-word;
-  flex: 1 1 auto;
   min-width: 0;
   overflow-wrap: break-word;
   white-space: normal;
+  line-height: 1.5;
 }
 
 .edit-button {
