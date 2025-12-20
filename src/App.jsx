@@ -126,6 +126,17 @@ function App() {
   const oldCount = oldTodos.length
   const completedCount = completedTodos.length
 
+  // Вычисление прогресса наград
+  const getRewardValue = (reward) => {
+    if (!reward) return 0
+    const num = parseInt(reward, 10)
+    return isNaN(num) ? 0 : num
+  }
+
+  const totalReward = normalizedTodos.reduce((sum, todo) => sum + getRewardValue(todo.reward), 0)
+  const completedReward = completedTodos.reduce((sum, todo) => sum + getRewardValue(todo.reward), 0)
+  const progressPercentage = totalReward > 0 ? Math.round((completedReward / totalReward) * 100) : 0
+
   // Фильтрация задач по дате для календаря
   const getTasksForDate = (date) => {
     if (!date) return []
@@ -268,6 +279,23 @@ function App() {
                 </svg>
               </button>
             </div>
+
+            {totalReward > 0 && (
+              <div className="progress-section">
+                <div className="progress-header">
+                  <span className="progress-label">Прогресс наград</span>
+                  <span className="progress-value">{completedReward} / {totalReward}</span>
+                </div>
+                <div className="progress-bar-container">
+                  <div 
+                    className="progress-bar-fill" 
+                    style={{ width: `${progressPercentage}%` }}
+                  >
+                    <span className="progress-percentage">{progressPercentage}%</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {showModal && (
               <div className="modal-overlay" onClick={handleCloseModal}>
