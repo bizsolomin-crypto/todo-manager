@@ -10,9 +10,11 @@ export function useTodos() {
     loadTodos()
   }, [])
 
-  const loadTodos = async () => {
+  const loadTodos = async (clearError = true) => {
     setLoading(true)
-    setError(null)
+    if (clearError) {
+      setError(null)
+    }
 
     try {
       if (supabase) {
@@ -97,11 +99,13 @@ export function useTodos() {
 
         if (supabaseError) throw supabaseError
         setTodos([data, ...todos.filter(t => t.id !== tempTodo.id)])
+        setError(null) // Очищаем ошибку при успешной операции
       } else {
         const todo = { id: Date.now(), ...newTodo }
         const updatedTodos = [todo, ...todos.filter(t => t.id !== tempTodo.id)]
         setTodos(updatedTodos)
         saveToLocalStorage(updatedTodos)
+        setError(null) // Очищаем ошибку при успешной операции
       }
     } catch (err) {
       console.error('Error adding todo:', err)
@@ -129,10 +133,12 @@ export function useTodos() {
 
         if (supabaseError) throw supabaseError
         await loadTodos()
+        setError(null) // Очищаем ошибку при успешной операции
       } else {
         const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
         setTodos(updatedTodos)
         saveToLocalStorage(updatedTodos)
+        setError(null) // Очищаем ошибку при успешной операции
       }
     } catch (err) {
       console.error('Error toggling todo:', err)
@@ -156,10 +162,12 @@ export function useTodos() {
 
         if (supabaseError) throw supabaseError
         await loadTodos()
+        setError(null) // Очищаем ошибку при успешной операции
       } else {
         const updatedTodos = todos.filter(t => t.id !== id)
         setTodos(updatedTodos)
         saveToLocalStorage(updatedTodos)
+        setError(null) // Очищаем ошибку при успешной операции
       }
     } catch (err) {
       console.error('Error deleting todo:', err)
@@ -244,10 +252,12 @@ export function useTodos() {
             category: updatedItem.category || t.category || 'none'
           } : t))
         }
+        setError(null) // Очищаем ошибку при успешной операции
       } else {
         const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
         setTodos(updatedTodos)
         saveToLocalStorage(updatedTodos)
+        setError(null) // Очищаем ошибку при успешной операции
       }
     } catch (err) {
       console.error('Error updating todo:', err)

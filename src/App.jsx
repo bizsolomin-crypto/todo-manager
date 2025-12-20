@@ -3,7 +3,7 @@ import { useTodos } from './hooks/useTodos'
 import './App.css'
 
 function App() {
-  const { todos, loading, error, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodos()
+  const { todos, loading, error, addTodo, toggleTodo, deleteTodo, updateTodo, refresh } = useTodos()
   const [inputValue, setInputValue] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('none')
   const [taskDate, setTaskDate] = useState('')
@@ -14,6 +14,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('tasks')
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(null)
+  const [errorDismissed, setErrorDismissed] = useState(false)
 
   // Форматирование даты в YYYY-MM-DD без сдвига часового пояса
   const formatDateForInput = (date) => {
@@ -237,9 +238,19 @@ function App() {
 
         {activeTab === 'tasks' && (
           <div className="tab-content">
-            {error && (
+            {error && !errorDismissed && (
               <div className="error-banner">
-                Ошибка: {error}. Используется локальное хранилище.
+                <span>Ошибка: {error}</span>
+                <button 
+                  className="error-close" 
+                  onClick={() => {
+                    setErrorDismissed(true)
+                    refresh()
+                  }}
+                  aria-label="Закрыть"
+                >
+                  ×
+                </button>
               </div>
             )}
 
