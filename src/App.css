@@ -1624,57 +1624,83 @@
   }
 
   .modal-row-group {
-    gap: 10px;
+    gap: 8px;
     align-items: flex-end;
     margin-bottom: 14px;
     flex-wrap: nowrap;
     width: 100%;
+    display: flex;
   }
 
   .modal-date-group {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
-    max-width: none;
+    max-width: calc(50% - 4px);
     display: flex;
     flex-direction: column;
-    width: calc(50% - 5px);
   }
 
   .modal-date-group label {
     margin-bottom: 5px;
     font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   .modal-reward-group {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
-    max-width: none;
+    max-width: calc(50% - 4px);
     display: flex;
     flex-direction: column;
-    width: calc(50% - 5px);
   }
 
   .modal-reward-group label {
     margin-bottom: 5px;
     font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   .modal-date-input {
     width: 100%;
     padding: 10px 10px;
-    height: 42px;
+    height: 44px;
     font-size: 0.9rem;
     box-sizing: border-box;
     min-width: 0;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-family: inherit;
+  }
+
+  .modal-date-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 
   .modal-reward-input {
     width: 100%;
-    padding: 10px 6px;
-    height: 42px;
+    padding: 10px 8px;
+    height: 44px;
     font-size: 0.9rem;
     box-sizing: border-box;
     min-width: 0;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-family: inherit;
+    text-align: center;
+  }
+
+  .modal-reward-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 
   .category-buttons {
