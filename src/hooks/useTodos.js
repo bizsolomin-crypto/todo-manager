@@ -52,8 +52,13 @@ export function useTodos() {
           }))
           
           setTodos(todosWithCategory)
+          setError(null) // Очищаем ошибку при успешной загрузке
         } catch (timeoutError) {
-          throw new Error('Supabase не отвечает. Используется локальное хранилище.')
+          // Если Supabase не отвечает, используем локальное хранилище без показа ошибки
+          console.warn('Supabase не отвечает, используется локальное хранилище')
+          const saved = localStorage.getItem('todos')
+          setTodos(saved ? JSON.parse(saved) : [])
+          // Не устанавливаем ошибку, так как приложение работает нормально с localStorage
         }
       } else {
         const saved = localStorage.getItem('todos')
@@ -61,7 +66,10 @@ export function useTodos() {
       }
     } catch (err) {
       console.error('Error loading todos:', err)
-      setError(err.message)
+      // Устанавливаем ошибку только для критических ошибок (не для таймаутов)
+      if (!err.message.includes('timeout') && !err.message.includes('Supabase не отвечает')) {
+        setError(err.message)
+      }
       const saved = localStorage.getItem('todos')
       setTodos(saved ? JSON.parse(saved) : [])
     } finally {
@@ -109,7 +117,10 @@ export function useTodos() {
       }
     } catch (err) {
       console.error('Error adding todo:', err)
-      setError(err.message)
+      // Не показываем ошибку, если это просто проблема с Supabase, но операция выполнена локально
+      if (!err.message.includes('timeout') && !err.message.includes('Supabase не отвечает')) {
+        setError(err.message)
+      }
       const todo = { id: Date.now(), ...newTodo }
       const updatedTodos = [todo, ...todos.filter(t => t.id !== tempTodo.id)]
       setTodos(updatedTodos)
@@ -142,7 +153,10 @@ export function useTodos() {
       }
     } catch (err) {
       console.error('Error toggling todo:', err)
-      setError(err.message)
+      // Не показываем ошибку, если это просто проблема с Supabase, но операция выполнена локально
+      if (!err.message.includes('timeout') && !err.message.includes('Supabase не отвечает')) {
+        setError(err.message)
+      }
       const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
       setTodos(updatedTodos)
       saveToLocalStorage(updatedTodos)
@@ -171,7 +185,10 @@ export function useTodos() {
       }
     } catch (err) {
       console.error('Error deleting todo:', err)
-      setError(err.message)
+      // Не показываем ошибку, если это просто проблема с Supabase, но операция выполнена локально
+      if (!err.message.includes('timeout') && !err.message.includes('Supabase не отвечает')) {
+        setError(err.message)
+      }
       setTodos(previousTodos)
       const updatedTodos = previousTodos.filter(t => t.id !== id)
       setTodos(updatedTodos)
@@ -261,7 +278,10 @@ export function useTodos() {
       }
     } catch (err) {
       console.error('Error updating todo:', err)
-      setError(err.message)
+      // Не показываем ошибку, если это просто проблема с Supabase, но операция выполнена локально
+      if (!err.message.includes('timeout') && !err.message.includes('Supabase не отвечает')) {
+        setError(err.message)
+      }
       const updatedTodos = todos.map(t => t.id === id ? updatedTodo : t)
       setTodos(updatedTodos)
       saveToLocalStorage(updatedTodos)
