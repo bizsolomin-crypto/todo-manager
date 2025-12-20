@@ -624,7 +624,7 @@
 
 .todo-content {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   flex: 1;
   min-width: 0;
@@ -729,9 +729,10 @@
 }
 
 .edit-button {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -744,6 +745,7 @@
   transition: all 0.2s ease;
   opacity: 0;
   margin-left: 4px;
+  align-self: center;
 }
 
 .todo-item:hover .edit-button {
@@ -776,6 +778,8 @@
 .delete-button {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -786,6 +790,7 @@
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .delete-button:hover {
@@ -1399,6 +1404,15 @@
     display: block;
   }
 
+  .edit-button {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    opacity: 1;
+    align-self: center;
+  }
+
   .delete-button {
     width: 44px;
     height: 44px;
@@ -1407,6 +1421,7 @@
     flex-shrink: 0;
     touch-action: manipulation;
     padding: 0;
+    align-self: center;
   }
 
   .empty-state {
@@ -1626,11 +1641,21 @@
     white-space: normal;
   }
 
+  .edit-button {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    opacity: 1;
+    align-self: center;
+  }
+
   .delete-button {
     width: 40px;
     height: 40px;
     min-width: 40px;
     min-height: 40px;
+    align-self: center;
   }
 }
 
