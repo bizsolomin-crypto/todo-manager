@@ -9,3 +9,4 @@ UPDATE todos
 SET category = 'none' 
 WHERE category IS NULL;
 
+
