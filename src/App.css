@@ -819,8 +819,15 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-width: 0;
-  width: 100%;
   gap: 4px;
+}
+
+.todo-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .todo-tags {
@@ -940,7 +947,7 @@
   pointer-events: none;
 }
 
-.edit-button {
+.todo-actions .edit-button {
   width: 32px;
   height: 32px;
   min-width: 32px;
@@ -960,43 +967,6 @@
   align-self: center;
 }
 
-.todo-item:hover .edit-button {
-  opacity: 1;
-}
-
-.edit-button:hover {
-  background: var(--background);
-  color: var(--primary);
-}
-
-.restore-button {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  opacity: 0;
-  margin-left: 4px;
-  align-self: center;
-}
-
-.todo-item:hover .restore-button {
-  opacity: 1;
-}
-
-.restore-button:hover {
-  background: rgba(34, 197, 94, 0.1);
-  color: var(--success);
-}
 
 .edit-input {
   flex: 1;
@@ -1016,7 +986,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.delete-button {
+.todo-actions .delete-button {
   width: 36px;
   height: 36px;
   min-width: 36px;
@@ -1031,10 +1001,9 @@
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  align-self: center;
 }
 
-.delete-button:hover {
+.todo-actions .delete-button:hover {
   background: rgba(239, 68, 68, 0.1);
   color: var(--danger);
 }
@@ -1695,25 +1664,23 @@
     word-break: break-word;
   }
 
-  .edit-button {
+  .todo-actions .edit-button {
     width: 32px;
     height: 32px;
     min-width: 32px;
     min-height: 32px;
     opacity: 1;
-    align-self: center;
   }
 
-  .restore-button {
+  .todo-actions .restore-button {
     width: 32px;
     height: 32px;
     min-width: 32px;
     min-height: 32px;
     opacity: 1;
-    align-self: center;
   }
 
-  .delete-button {
+  .todo-actions .delete-button {
     width: 44px;
     height: 44px;
     min-width: 44px;
@@ -1721,7 +1688,6 @@
     flex-shrink: 0;
     touch-action: manipulation;
     padding: 0;
-    align-self: center;
   }
 
   .empty-state {
@@ -1891,6 +1857,11 @@
   .modal-add-btn {
     width: 100%;
     padding: 12px;
+  }
+
+  .todo-actions {
+    gap: 6px;
+    margin-left: 6px;
   }
 }
 
@@ -2069,12 +2040,12 @@
     color: var(--text-secondary);
   }
 
-  .restore-button:hover {
+  .todo-actions .restore-button:hover {
     background: transparent;
     color: var(--text-secondary);
   }
 
-  .delete-button:hover {
+  .todo-actions .delete-button:hover {
     background: transparent;
     color: var(--text-secondary);
   }
