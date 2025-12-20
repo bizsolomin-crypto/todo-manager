@@ -1295,6 +1295,15 @@
     flex: 1;
     min-width: 0;
     overflow: hidden;
+    align-items: flex-start;
+  }
+
+  .todo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
   }
 
   .checkbox {
