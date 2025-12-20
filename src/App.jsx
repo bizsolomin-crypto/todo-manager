@@ -15,6 +15,7 @@ function App() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(null)
   const [errorDismissed, setErrorDismissed] = useState(false)
+  const [expandedTodos, setExpandedTodos] = useState(new Set())
 
   // Форматирование даты в YYYY-MM-DD без сдвига часового пояса
   const formatDateForInput = (date) => {
@@ -150,27 +151,45 @@ function App() {
   const selectedDateTasks = selectedDate ? getTasksForDate(selectedDate) : []
 
   // Компонент задачи
-  const TodoItem = ({ todo, showCategory = true }) => (
-    <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-      <div className="todo-content">
-        <button
-          className={`checkbox ${todo.completed ? 'checked' : ''}`}
-          onClick={() => toggleTodo(todo.id)}
-        >
-          {todo.completed && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          )}
-        </button>
-        <div className="todo-text-wrapper">
-          <span 
-            className="todo-text"
-            onDoubleClick={() => !todo.completed && handleEditStart(todo)}
-            title={todo.completed ? '' : 'Двойной клик для редактирования'}
+  const TodoItem = ({ todo, showCategory = true }) => {
+    const isExpanded = expandedTodos.has(todo.id)
+    
+    const handleTextClick = (e) => {
+      // Если двойной клик - редактирование, если одинарный - раскрытие
+      if (e.detail === 1) {
+        // Одинарный клик - раскрыть/свернуть текст
+        const newExpanded = new Set(expandedTodos)
+        if (isExpanded) {
+          newExpanded.delete(todo.id)
+        } else {
+          newExpanded.add(todo.id)
+        }
+        setExpandedTodos(newExpanded)
+      }
+    }
+
+    return (
+      <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+        <div className="todo-content">
+          <button
+            className={`checkbox ${todo.completed ? 'checked' : ''}`}
+            onClick={() => toggleTodo(todo.id)}
           >
-            {todo.text}
-          </span>
+            {todo.completed && (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            )}
+          </button>
+          <div className="todo-text-wrapper">
+            <span 
+              className={`todo-text ${isExpanded ? 'expanded' : ''}`}
+              onDoubleClick={() => !todo.completed && handleEditStart(todo)}
+              onClick={handleTextClick}
+              title={todo.text}
+            >
+              {todo.text}
+            </span>
           {!todo.completed && (showCategory || todo.reward) && (
             <div className="todo-tags">
               {showCategory && (
@@ -237,7 +256,8 @@ function App() {
         </svg>
       </button>
     </div>
-  )
+    )
+  }
 
   return (
     <div className="app">
@@ -676,7 +696,7 @@ function App() {
                               )}
                             </button>
                             <div className="calendar-task-text-wrapper">
-                              <span className="calendar-task-text">{todo.text}</span>
+                              <span className="calendar-task-text" title={todo.text}>{todo.text}</span>
                               {!todo.completed && (todo.category === 'recent' || todo.category === 'old' || todo.reward) && (
                                 <div className="todo-tags">
                                   {todo.category === 'recent' && (

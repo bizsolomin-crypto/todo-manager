@@ -911,6 +911,33 @@
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.todo-text:hover {
+  color: var(--primary);
+}
+
+.todo-text.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+  max-height: none;
+}
+
+.todo-text:not(.expanded)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 1.5em;
+  background: linear-gradient(to right, transparent, var(--surface));
+  pointer-events: none;
 }
 
 .edit-button {
