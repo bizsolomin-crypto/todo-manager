@@ -1265,9 +1265,10 @@
   }
 
   .todo-content {
-    gap: 12px;
+    gap: 8px;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
 
   .checkbox {
@@ -1284,8 +1285,9 @@
     line-height: 1.5;
     word-break: break-word;
     overflow-wrap: break-word;
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
+    white-space: normal;
   }
 
   .delete-button {
