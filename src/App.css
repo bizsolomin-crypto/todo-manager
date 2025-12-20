@@ -921,11 +921,14 @@
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
+  align-items: flex-end;
 }
 
 .modal-date-group {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-date-group label {
@@ -934,11 +937,14 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .modal-reward-group {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-reward-group label {
@@ -947,6 +953,7 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .modal-reward-input {
