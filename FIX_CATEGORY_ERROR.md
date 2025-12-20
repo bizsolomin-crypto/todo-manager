@@ -78,3 +78,4 @@ CREATE TRIGGER update_todos_updated_at
 Код теперь обрабатывает отсутствие колонки и использует localStorage как fallback, но для полной функциональности лучше выполнить миграцию.
 
 
+

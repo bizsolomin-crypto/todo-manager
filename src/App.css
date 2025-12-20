@@ -636,7 +636,8 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-width: 0;
-  gap: 8px;
+  width: 100%;
+  gap: 4px;
 }
 
 .todo-tags {
@@ -720,9 +721,11 @@
   color: var(--text-primary);
   word-break: break-word;
   min-width: 0;
+  width: 100%;
   overflow-wrap: break-word;
   white-space: normal;
   line-height: 1.5;
+  display: block;
 }
 
 .edit-button {
@@ -925,8 +928,9 @@
 }
 
 .modal-date-group {
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
+  max-width: 50%;
   display: flex;
   flex-direction: column;
 }
@@ -941,8 +945,9 @@
 }
 
 .modal-reward-group {
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
+  max-width: 50%;
   display: flex;
   flex-direction: column;
 }
@@ -1125,15 +1130,17 @@
   }
 
   .modal-date-group {
-    flex: 1;
+    flex: 1 1 50%;
     min-width: 0;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
   }
 
   .modal-reward-group {
-    flex: 1;
+    flex: 1 1 50%;
     min-width: 0;
+    max-width: 50%;
     display: flex;
     flex-direction: column;
   }
@@ -1315,7 +1322,8 @@
     flex-direction: column;
     flex: 1 1 auto;
     min-width: 0;
-    gap: 8px;
+    width: 100%;
+    gap: 4px;
   }
 
   .checkbox {
@@ -1334,7 +1342,9 @@
     overflow-wrap: break-word;
     flex: 1 1 auto;
     min-width: 0;
+    width: 100%;
     white-space: normal;
+    display: block;
   }
 
   .delete-button {
